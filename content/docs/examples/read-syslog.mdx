@@ -1,0 +1,55 @@
+---
+title: Read Syslog
+description: Stream device logs with syslog relay.
+---
+
+Use `SyslogRelayClient` to stream logs inside your own process:
+
+This example uses the `first_provider()` helper from the examples overview.
+
+```rust title="src/main.rs"
+use idevice::{IdeviceService, syslog_relay::SyslogRelayClient};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let provider = first_provider().await?;
+
+    // Syslog relay stays open and yields one log line at a time.
+    let mut syslog = SyslogRelayClient::connect(&provider).await?;
+
+    loop {
+        println!("{}", syslog.next().await?);
+    }
+}
+```
+
+Add the needed features:
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "syslog_relay"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+```
+
+To test from a terminal, start a live syslog stream:
+
+```bash title="Terminal"
+idevice-tools syslog_relay
+```
+
+Pipe the stream into local tools when you want to filter or save output:
+
+```bash title="Terminal"
+idevice-tools syslog_relay | rg SpringBoard
+```
+
+```bash title="Terminal"
+idevice-tools syslog_relay > device.log
+```
+
+Stop the stream with `Ctrl+C`.
+
+## Source
+
+- [`tools/src/syslog_relay.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/syslog_relay.rs)
+- [`cpp/examples/syslog_relay.cpp`](https://github.com/jkcoxson/idevice/blob/master/cpp/examples/syslog_relay.cpp)

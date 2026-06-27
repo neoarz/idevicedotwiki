@@ -1,0 +1,94 @@
+---
+title: Pair a Device
+description: Pair a connected iOS device with the local host.
+---
+
+Pairing is exposed through `LockdownClient::pair`. The library returns the
+pairing file; saving it to `usbmuxd` is the caller's responsibility.
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    lockdown::LockdownClient,
+    usbmuxd::{UsbmuxdAddr, UsbmuxdConnection},
+};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Pairing starts over usbmuxd, so first choose the device to trust.
+    let addr = UsbmuxdAddr::from_env_var()?;
+    let mut usbmuxd = UsbmuxdConnection::new(addr.to_socket().await?, 0);
+    let device = usbmuxd
+        .get_devices()
+        .await?
+        .into_iter()
+        .next()
+        .ok_or("no devices connected")?;
+
+    // Lockdown owns the pair request shown on the device.
+    let provider = device.to_provider(addr, "my-pairing-tool");
+    let mut lockdown = LockdownClient::connect(&provider).await?;
+
+    // The pairing record is returned to the caller instead of saved automatically.
+    let host_id = uuid::Uuid::new_v4().to_string().to_uppercase();
+    let buid = usbmuxd.get_buid().await?;
+    let mut pairing_file = lockdown.pair(host_id, buid, Some("My App")).await?;
+
+    // Test the record, attach the UDID, then save it through usbmuxd.
+    lockdown.start_session(&pairing_file).await?;
+    pairing_file.udid = Some(device.udid.clone());
+
+    let bytes = pairing_file.serialize()?;
+    usbmuxd.save_pair_record(&device.udid, bytes).await?;
+
+    Ok(())
+}
+```
+
+Add the needed features:
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "pair"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+uuid = { version = "1", features = ["v4"] }
+```
+
+To test pairing from the terminal, pair the first USB-connected device:
+
+```bash title="Terminal"
+idevice-tools pair
+```
+
+Pair a specific device:
+
+```bash title="Terminal"
+idevice-tools pair <device-udid>
+```
+
+Set the host name reported during pairing:
+
+```bash title="Terminal"
+idevice-tools pair --name "My Mac" <device-udid>
+```
+
+The CLI tool prints the generated pairing file and saves it back through `usbmuxd`.
+If the device asks whether to trust this computer, accept it on the device.
+
+For host-to-host pairing flows used by the newer remote path, use `pair_host`.
+For Apple TV pairing, use `pair_apple_tv`.
+
+```bash title="Terminal"
+pair_host
+```
+
+```bash title="Terminal"
+pair_apple_tv
+```
+
+## Source
+
+- [`tools/src/pair.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/pair.rs)
+- [`tools/src/pair_host.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/pair_host.rs)
+- [`tools/src/pair_apple_tv.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/pair_apple_tv.rs)
+- [`cpp/examples/pair_host.cpp`](https://github.com/jkcoxson/idevice/blob/master/cpp/examples/pair_host.cpp)

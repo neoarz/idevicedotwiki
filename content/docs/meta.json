@@ -15,6 +15,14 @@
     "guides/file-app-services",
     "guides/developer-services",
     "guides/debugging-logs",
-    "guides/backup-restore"
+    "guides/backup-restore",
+    "---Examples---",
+    "examples/index",
+    "examples/list-devices",
+    "examples/pair-a-device",
+    "examples/access-files",
+    "examples/install-an-app",
+    "examples/take-a-screenshot",
+    "examples/read-syslog"
   ]
 }

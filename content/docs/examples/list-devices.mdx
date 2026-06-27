@@ -1,0 +1,51 @@
+---
+title: List Devices
+description: List devices reported by usbmuxd.
+---
+
+List devices from Rust by connecting to `usbmuxd` and reading the device list:
+
+```rust title="src/main.rs"
+use idevice::usbmuxd::{UsbmuxdAddr, UsbmuxdConnection};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // usbmuxd tracks devices connected over USB or network.
+    let addr = UsbmuxdAddr::from_env_var()?;
+    let mut usbmuxd = UsbmuxdConnection::new(addr.to_socket().await?, 0);
+
+    for device in usbmuxd.get_devices().await? {
+        println!("{} ({:?})", device.udid, device.connection_type);
+    }
+
+    Ok(())
+}
+```
+
+Add the needed features:
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+```
+
+To check the same thing from a terminal, use `idevice_id`:
+
+```bash title="Terminal"
+idevice_id
+```
+
+Listen for attach and detach events:
+
+```bash title="Terminal"
+idevice_id -l
+```
+
+The CLI command prints the raw device records returned by `usbmuxd`. The C++
+example shows the same idea with one line per device.
+
+## Source
+
+- [`tools/src/idevice_id.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/idevice_id.rs)
+- [`cpp/examples/idevice_id.cpp`](https://github.com/jkcoxson/idevice/blob/master/cpp/examples/idevice_id.cpp)

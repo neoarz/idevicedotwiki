@@ -1,0 +1,12 @@
+{
+  "title": "Examples",
+  "pages": [
+    "index",
+    "list-devices",
+    "pair-a-device",
+    "access-files",
+    "install-an-app",
+    "take-a-screenshot",
+    "read-syslog"
+  ]
+}

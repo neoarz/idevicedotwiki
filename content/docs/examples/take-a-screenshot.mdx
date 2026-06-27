@@ -1,0 +1,49 @@
+---
+title: Take a Screenshot
+description: Save a screenshot from the connected device.
+---
+
+Use `ScreenshotService` for the older screenshot service path:
+
+This example uses the `first_provider()` helper from the examples overview.
+
+```rust title="src/main.rs"
+use idevice::{IdeviceService, screenshotr::ScreenshotService};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let provider = first_provider().await?;
+
+    // screenshotr is the older lockdown service for screenshot capture.
+    let mut screenshots = ScreenshotService::connect(&provider).await?;
+
+    let image = screenshots.take_screenshot().await?;
+    tokio::fs::write("./screenshot.png", image).await?;
+
+    Ok(())
+}
+```
+
+Add the needed features:
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "screenshotr"] }
+tokio = { version = "1", features = ["fs", "macros", "rt-multi-thread"] }
+```
+
+The CLI screenshot command is a useful compatibility wrapper. It tries the newer
+DVT/CoreDevice path first, then falls back to `screenshotr`:
+
+```bash title="Terminal"
+idevice-tools screenshot ./screenshot.png
+```
+
+For the older service path, make sure the required Developer Disk Image is
+mounted on devices that need it.
+
+## Source
+
+- [`tools/src/screenshot.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/screenshot.rs)
+- [`cpp/examples/screenshot.cpp`](https://github.com/jkcoxson/idevice/blob/master/cpp/examples/screenshot.cpp)
+- [`cpp/examples/screenshotr.cpp`](https://github.com/jkcoxson/idevice/blob/master/cpp/examples/screenshotr.cpp)

@@ -1,0 +1,54 @@
+---
+title: Overview
+description: Copyable examples for common idevice tasks.
+---
+
+These examples are written for developers embedding `idevice` in an app or
+tool. Each page starts with the Rust API shape, then includes the matching CLI
+command when it is useful for testing your setup from a terminal.
+
+- [List Devices](/docs/examples/list-devices): print devices known to `usbmuxd`.
+- [Pair a Device](/docs/examples/pair-a-device): create and save a local pairing record.
+- [Access Files](/docs/examples/access-files): list, download, upload, and inspect AFC paths.
+- [Install an App](/docs/examples/install-an-app): install or upgrade an `.ipa`.
+- [Take a Screenshot](/docs/examples/take-a-screenshot): save a device screenshot.
+- [Read Syslog](/docs/examples/read-syslog): stream device logs.
+
+Most examples use this provider setup:
+
+```rust title="src/main.rs"
+use idevice::usbmuxd::{UsbmuxdAddr, UsbmuxdConnection};
+
+async fn first_provider() -> Result<idevice::provider::UsbmuxdProvider, Box<dyn std::error::Error>> {
+    // Respect USBMUXD_SOCKET_ADDRESS when it is set, otherwise use the platform default.
+    let addr = UsbmuxdAddr::from_env_var()?;
+    let mut usbmuxd = UsbmuxdConnection::new(addr.to_socket().await?, 0);
+
+    // Ask usbmuxd for a connected device. Real apps should pick by UDID.
+    let device = usbmuxd
+        .get_devices()
+        .await?
+        .into_iter()
+        .next()
+        .ok_or("no devices connected")?;
+
+    // Providers create new connections to the same device for each service.
+    Ok(device.to_provider(addr, "my-app"))
+}
+```
+
+For a real application, choose the device by UDID instead of blindly taking the
+first device.
+
+The CLI tools use the first connected device by default. Use `--udid` when more
+than one device is connected:
+
+```bash title="Terminal"
+idevice-tools --udid <device-udid> <command>
+```
+
+For TCP/CoreDevice tunnel usage, pass both the device host and pairing file:
+
+```bash title="Terminal"
+idevice-tools --host <device-ip> --pairing-file ./pairing_file.plist <command>
+```

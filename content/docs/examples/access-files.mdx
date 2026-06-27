@@ -1,0 +1,108 @@
+---
+title: Access Files
+description: Use AFC to read and write files exposed by the device.
+---
+
+Use `AfcClient` when you need to read or write files exposed by AFC:
+
+This example uses the `first_provider()` helper from the examples overview.
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    afc::{AfcClient, opcode::AfcFopenMode},
+};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let provider = first_provider().await?;
+
+    let mut afc = AfcClient::connect(&provider).await?;
+
+    // Paths here are device-side paths inside the AFC jail.
+    for entry in afc.list_dir("/").await? {
+        println!("{entry}");
+    }
+
+    let mut file = afc.open("/path/on/device", AfcFopenMode::RdOnly).await?;
+    let bytes = file.read_entire().await?;
+    file.close().await?;
+
+    tokio::fs::write("./local-file", bytes).await?;
+
+    Ok(())
+}
+```
+
+Add the needed features:
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "afc"] }
+tokio = { version = "1", features = ["fs", "macros", "rt-multi-thread"] }
+```
+
+For app containers, connect to House Arrest first and vend the documents or
+container AFC client:
+
+```rust title="src/main.rs"
+use idevice::{IdeviceService, house_arrest::HouseArrestClient};
+
+// House Arrest vends an AFC client scoped to one installed app.
+let house_arrest = HouseArrestClient::connect(&provider).await?;
+let mut afc = house_arrest.vend_documents("com.example.app").await?;
+```
+
+Enable `house_arrest` too when you use that path.
+
+To check the same operations from a terminal, list a directory in the normal AFC
+jail:
+
+```bash title="Terminal"
+idevice-tools afc list /
+```
+
+Download a file from the device:
+
+```bash title="Terminal"
+idevice-tools afc download /path/on/device ./local-file
+```
+
+Upload a local file:
+
+```bash title="Terminal"
+idevice-tools afc upload ./local-file /path/on/device
+```
+
+Create and remove paths:
+
+```bash title="Terminal"
+idevice-tools afc mkdir /Documents/example
+idevice-tools afc remove /Documents/example/file.txt
+idevice-tools afc remove_all /Documents/example
+```
+
+Inspect a file or the AFC device:
+
+```bash title="Terminal"
+idevice-tools afc info /path/on/device
+idevice-tools afc device_info
+```
+
+To access an app's documents directory through House Arrest:
+
+```bash title="Terminal"
+idevice-tools afc --documents com.example.app list /Documents
+```
+
+To access an app container:
+
+```bash title="Terminal"
+idevice-tools afc --container com.example.app list /
+```
+
+## Source
+
+- [`tools/src/afc.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/afc.rs)
+- [`cpp/examples/afc.cpp`](https://github.com/jkcoxson/idevice/blob/master/cpp/examples/afc.cpp)
+- [`ffi/examples/afc.c`](https://github.com/jkcoxson/idevice/blob/master/ffi/examples/afc.c)

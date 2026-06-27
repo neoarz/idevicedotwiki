@@ -1,0 +1,71 @@
+---
+title: Install an App
+description: Install or upgrade an iOS app package.
+---
+
+For most apps, use the high-level install helper. It uploads the package through
+AFC and then calls Installation Proxy:
+
+This example uses the `first_provider()` helper from the examples overview.
+
+```rust title="src/main.rs"
+use idevice::utils::installation;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let provider = first_provider().await?;
+
+    installation::install_package(&provider, "./App.ipa", None).await?;
+
+    Ok(())
+}
+```
+
+Track progress with the callback variant:
+
+```rust title="src/main.rs"
+installation::install_package_with_callback(
+    &provider,
+    "./App.ipa",
+    None,
+    |(percentage, _)| async move {
+        println!("Installing: {percentage}%");
+    },
+    (),
+)
+.await?;
+```
+
+Add the needed features:
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "afc", "installation_proxy"] }
+tokio = { version = "1", features = ["fs", "macros", "rt-multi-thread"] }
+```
+
+To test from a terminal, install a local `.ipa`:
+
+```bash title="Terminal"
+idevice-tools ideviceinstaller install ./App.ipa
+```
+
+Upgrade an existing app:
+
+```bash title="Terminal"
+idevice-tools ideviceinstaller upgrade ./App.ipa
+```
+
+The CLI uses the same high-level installation helper and prints progress while
+the install or upgrade runs.
+
+If you need to implement this from a binding, the FFI example shows the lower
+level sequence: upload the IPA to `/PublicStaging`, connect to Installation
+Proxy, then request installation.
+
+## Source
+
+- [`tools/src/ideviceinstaller.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/ideviceinstaller.rs)
+- [`idevice/src/utils/installation/mod.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/utils/installation/mod.rs)
+- [`ffi/examples/ipa_installer.c`](https://github.com/jkcoxson/idevice/blob/master/ffi/examples/ipa_installer.c)
+- [`cpp/examples/installation_proxy.cpp`](https://github.com/jkcoxson/idevice/blob/master/cpp/examples/installation_proxy.cpp)

@@ -2,10 +2,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const links = [
+  { id: 'quick-start', title: 'Quick Start', href: '/docs' },
   { id: 'installation', title: 'Installation', href: '/docs/installation' },
-  { id: 'features', title: 'Features', href: '/docs/installation/features' },
-  { id: 'cli-tools', title: 'CLI Tools', href: '/docs/installation/cli' },
   { id: 'comparisons', title: 'Comparisons', href: '/docs/comparisons' },
+  { id: 'guides', title: 'Guides', href: '/docs/guides' },
 ];
 
 export default function HomePage() {
