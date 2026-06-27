@@ -1,0 +1,13 @@
+node_modules
+.source
+.next
+out
+build
+dist
+coverage
+*.tsbuildinfo
+.DS_Store
+*.pem
+.env*.local
+.vercel
+.devin/config.local.json
