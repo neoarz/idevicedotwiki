@@ -1,0 +1,51 @@
+---
+title: Overview
+description: Install the idevice crate and set up your environment.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+
+## Prerequisites
+
+### 1. Install Rust
+
+`idevice` requires a recent Rust toolchain (edition 2024). Install via
+[rustup](https://rustup.rs):
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+### 2. Install usbmuxd
+
+To communicate with devices over USB, you need the `usbmuxd` daemon running
+on your host machine.
+
+<Tabs>
+  <Tab value="macos">
+    Pre-installed on macOS. iTunes or Xcode provides it automatically.
+  </Tab>
+  <Tab value="linux">
+    ```bash
+    sudo apt install usbmuxd
+    ```
+  </Tab>
+  <Tab value="windows">
+    Install iTunes from the Microsoft Store, which includes `usbmuxd`.
+  </Tab>
+</Tabs>
+
+## Quick start
+
+Add `idevice` to your `Cargo.toml`:
+
+```toml
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "pair"] }
+```
+
+<Callout type="warn" title="Pin your version">
+  Breaking changes happen at each point release until 0.2.0. Pin to a specific
+  version to avoid breakage.
+</Callout>

@@ -1,0 +1,56 @@
+---
+title: FFI Bindings
+description: Build C, C++, and Swift bindings for embedding in other languages.
+---
+
+For use in other languages, a small FFI crate is provided. Example C programs
+can be found in the [`ffi/examples`](https://github.com/jkcoxson/idevice/tree/main/ffi/examples)
+directory.
+
+## C
+
+Build the FFI library:
+
+```bash
+cd ffi
+cargo build --release
+```
+
+Then compile the examples with CMake:
+
+```bash
+cd ffi/examples
+mkdir build && cd build
+cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release
+cmake --build . --config Release --parallel
+```
+
+Example programs include `afc.c`, `lockdownd.c`, `process_control.c`,
+`heartbeat.c`, `connect.c`, `list_apps.c`, and more.
+
+## C++
+
+C++ bindings are provided in the `cpp/` directory, offering smoother and safer
+usage in C++ codebases. Build the examples:
+
+```bash
+cd cpp/examples
+mkdir build && cd build
+cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release
+cmake --build . --config Release --parallel
+```
+
+Example programs include `afc.cpp`, `installation_proxy.cpp`, `screenshot.cpp`,
+`syslog_relay.cpp`, `wda.cpp`, and more.
+
+## Swift
+
+Swift bindings and an XCFramework are available in the `swift/` directory.
+Building the XCFramework requires a Mac:
+
+```bash
+just xcframework
+```
+
+This produces `swift/IDevice.xcframework`, which can be dropped into an Xcode
+project. A Swift Package Manager manifest (`Package.swift`) is also included.

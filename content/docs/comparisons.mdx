@@ -1,0 +1,95 @@
+---
+title: Comparisons
+description: How idevice compares to libimobiledevice, pymobiledevice3, and go-ios.
+icon: Scale
+---
+
+## The projects
+
+These are the main projects worth comparing against:
+
+- `libimobiledevice`: C library, mature API, distro packages, legacy services.
+- `pymobiledevice3`: Python tooling for scripting, research, WebInspector, and tunneling.
+- `go-ios`: Go CLI for automation, XCTest/WDA, WebInspector/CDP, and tunnel workflows.
+
+## iOS 17+ tunnels
+
+| | idevice | libimobiledevice | pymobiledevice3 | go-ios |
+|---|:---:|:---:|:---:|:---:|
+| RemoteXPC / RSD | ✅ | ⚠️ | ✅ | ✅ |
+| CoreDevice tunnel | ✅ | ⚠️ | ✅ | ✅ |
+| Userspace tunnel (no root) | ✅ | ❌ | ✅ | ✅ |
+| rppairing | ✅ | ❌ | ✅ | ✅ |
+
+## Feature parity
+
+### Core services
+
+| Service | idevice | libimobiledevice | pymobiledevice3 | go-ios |
+|---|:---:|:---:|:---:|:---:|
+| Remote pairing (rppairing) | ✅ | ❌ | ✅ | ✅ |
+| Heartbeat | ✅ | ✅ | ✅ | ❌ |
+| Install coordination proxy | ✅ | ❌ | ✅ | ❌ |
+| Preboard service | ✅ | ✅ | ✅ | ❌ |
+
+### Developer tools (DVT / Instruments)
+
+| Service | idevice | libimobiledevice | pymobiledevice3 | go-ios |
+|---|:---:|:---:|:---:|:---:|
+| DVT / Instruments | ✅ | ❌ | ✅ | ✅ |
+| Process control | ✅ | ❌ | ✅ | ✅ |
+| Sysmontap | ✅ | ❌ | ✅ | ✅ |
+| Graphics (OpenGL) | ✅ | ❌ | ✅ | ✅ |
+| Network monitor | ✅ | ❌ | ✅ | ✅ |
+| Condition inducer | ✅ | ❌ | ✅ | ✅ |
+| Energy monitor | ✅ | ❌ | ✅ | ❌ |
+| Screenshot | ✅ | ✅ (screenshotr) | ✅ | ✅ |
+
+### CoreDevice services (iOS 17+)
+
+| Service | idevice | libimobiledevice | pymobiledevice3 | go-ios |
+|---|:---:|:---:|:---:|:---:|
+| CoreDevice proxy | ✅ | ⚠️ | ✅ | ✅ |
+| App service | ✅ | ❌ | ✅ | ✅ |
+| HID (input injection) | ✅ | ❌ | ✅ | ❌ |
+| Screen capture / display stream | ✅ | ❌ | ✅ | ✅ |
+| Pasteboard (clipboard) | ✅ | ❌ | ✅ | ❌ |
+| Orientation | ✅ | ❌ | ✅ | ✅ |
+| Location service | ✅ | ❌ | ✅ | ✅ |
+
+### Debugging and capture
+
+| Service | idevice | libimobiledevice | pymobiledevice3 | go-ios |
+|---|:---:|:---:|:---:|:---:|
+| Syslog relay | ✅ | ✅ | ✅ | ✅ |
+| OS trace relay | ✅ | ✅ | ✅ | ✅ |
+| Debug proxy | ✅ | ✅ | ✅ | ✅ |
+| Crash report copy | ✅ | ✅ | ✅ | ✅ |
+| PCAP (network capture) | ✅ | ❌ | ✅ | ✅ |
+| Bluetooth packet logger | ✅ | ✅ | ❌ | ❌ |
+
+### Backup and restore
+
+| Service | idevice | libimobiledevice | pymobiledevice3 | go-ios |
+|---|:---:|:---:|:---:|:---:|
+| MobileBackup2 | ✅ | ✅ | ✅ | ❌ |
+| Restore service | ✅ | ✅ | ✅ | ❌ |
+| TSS (Apple signing) | ⚠️ | ✅ (libtatsu) | ✅ | ❌ |
+
+### Automation
+
+| Service | idevice | libimobiledevice | pymobiledevice3 | go-ios |
+|---|:---:|:---:|:---:|:---:|
+| XCTest | ✅ | ❌ | ✅ | ✅ |
+| WebDriverAgent bootstrap | ✅ | ❌ | ✅ | ✅ |
+| WebInspector | 🔜 | ✅ | ✅ | ✅ |
+
+### Other
+
+| Service | idevice | libimobiledevice | pymobiledevice3 | go-ios |
+|---|:---:|:---:|:---:|:---:|
+| Companion proxy (Apple Watch) | ✅ | ✅ | ✅ | ❌ |
+| File relay | 🔜 | ✅ | ✅ | ❌ |
+| Mobile sync (contacts/calendars) | ❌ | ✅ | ❌ | ❌ |
+| mDNS / Bonjour discovery | ✅ | ❌ | ✅ | ✅ |
+| Tunneld (pymobiledevice3 interop) | ✅ | ❌ | ✅ | ❌ |

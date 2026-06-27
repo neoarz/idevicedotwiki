@@ -2,10 +2,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const links = [
-  { id: 'placeholder-1', title: 'Placeholder', href: '/docs' },
-  { id: 'placeholder-2', title: 'Placeholder', href: '/docs' },
-  { id: 'placeholder-3', title: 'Placeholder', href: '/docs' },
-  { id: 'placeholder-4', title: 'Placeholder', href: '/docs' },
+  { id: 'installation', title: 'Installation', href: '/docs/installation' },
+  { id: 'features', title: 'Features', href: '/docs/installation/features' },
+  { id: 'cli-tools', title: 'CLI Tools', href: '/docs/installation/cli' },
+  { id: 'comparisons', title: 'Comparisons', href: '/docs/comparisons' },
 ];
 
 export default function HomePage() {
@@ -42,7 +42,9 @@ export default function HomePage() {
           </a>
         </div>
 
-        <div className="mt-10 grid gap-3 sm:grid-cols-2">
+        <div className="mt-10 h-px w-full bg-fd-border" />
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
           {links.map((link) => (
             <Link
               key={link.id}

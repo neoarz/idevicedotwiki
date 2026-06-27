@@ -1,6 +1,42 @@
 ---
-title: Quick start
-description: Hello World.
+title: Quick Start
+description: A pure Rust library for interacting with iOS services.
+icon: Rocket
 ---
 
-Hello World.
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Cards, Card } from 'fumadocs-ui/components/card';
+import { Code, ExternalLink, Scale, Wrench } from 'lucide-react';
+
+A pure Rust library for interacting with iOS services.
+Inspired by [libimobiledevice](https://github.com/libimobiledevice/libimobiledevice),
+[pymobiledevice3](https://github.com/doronz88/pymobiledevice3),
+and [go-ios](https://github.com/danielpaulus/go-ios),
+this library interfaces with lockdownd, usbmuxd, and RSD to perform actions
+on an iOS device that a Mac normally would.
+
+<Cards>
+  <Card title="Installation" href="/docs/installation" icon={<Wrench />}>
+    Install the crate or CLI and set up your environment.
+  </Card>
+  <Card title="Comparisons" href="/docs/comparisons" icon={<Scale />}>
+    How idevice stacks up against other iOS libraries.
+  </Card>
+  <Card title="API Reference" href="https://docs.rs/idevice" icon={<Code />} external>
+    Browse the full Rust API on docs.rs.
+  </Card>
+  <Card title="GitHub" href="https://github.com/jkcoxson/idevice" icon={<ExternalLink />} external>
+    View the source, report issues, and contribute.
+  </Card>
+</Cards>
+
+## State
+
+<Callout type="warn" title="IMPORTANT">
+  Breaking changes will happen at each point release until 0.2.0.
+  Pin your `Cargo.toml` to a specific version to avoid breakage.
+</Callout>
+
+This library is in development and research stage.
+Releases are being published to crates.io for use in other projects,
+but the API and feature-set are far from final or even planned.

@@ -1,0 +1,11 @@
+{
+  "title": "Installation",
+  "icon": "Wrench",
+  "pages": [
+    "index",
+    "features",
+    "cli",
+    "ffi",
+    "wasm"
+  ]
+}

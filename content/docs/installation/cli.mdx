@@ -1,0 +1,36 @@
+---
+title: CLI Tools
+description: Install the idevice-tools command-line binary from source.
+---
+
+The `idevice-tools` CLI is in the `tools` crate. Install it from source:
+
+```bash
+git clone https://github.com/jkcoxson/idevice.git
+cd idevice
+cargo install --path tools
+```
+
+This installs the `idevice-tools` binary along with several companion binaries:
+
+- `idevice-tools` — the main CLI
+- `pair_host` — pair a host with a device
+- `pair_apple_tv` — pair an Apple TV
+- `idevice_id` — list connected device UDIDs
+- `iproxy` — proxy local TCP connections to device services
+
+## Building from source
+
+To build the entire workspace without installing:
+
+```bash
+git clone https://github.com/jkcoxson/idevice.git
+cd idevice
+cargo build --release
+```
+
+To build with all features enabled:
+
+```bash
+cargo build --release --all-features
+```

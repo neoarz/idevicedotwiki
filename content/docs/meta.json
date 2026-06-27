@@ -2,6 +2,9 @@
   "title": "idevice",
   "icon": "Smartphone",
   "pages": [
-    "index"
+    "---Introduction---",
+    "index",
+    "installation",
+    "comparisons"
   ]
 }

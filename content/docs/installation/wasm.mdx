@@ -1,0 +1,24 @@
+---
+title: WASM
+description: Compile idevice for wasm32-unknown-unknown.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+`idevice` has experimental support for `wasm32-unknown-unknown`. Enable the
+`wasm` feature:
+
+```toml
+[dependencies]
+idevice = { version = "0.1.64", default-features = false, features = ["wasm"] }
+```
+
+The `wasm` feature selects `rustls-rustcrypto` as the TLS crypto backend, which
+is a pure-Rust provider that works in environments where `ring` or `aws-lc-rs`
+can't be compiled.
+
+<Callout type="info" title="Bring your own transport">
+  On WASM, the `tcp` and `usbmuxd` features are not available. You must provide
+  your own transport implementing the `ReadWrite` trait — for example, wrapping
+  a WebSocket or WebRTC data channel.
+</Callout>

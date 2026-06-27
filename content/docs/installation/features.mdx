@@ -1,0 +1,99 @@
+---
+title: Features
+description: Choose which Cargo features to enable and configure the TLS backend.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+To keep dependency bloat and compile time down, everything in `idevice` is
+contained in Cargo features. Enable only what you need.
+
+## Choosing features
+
+```toml
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "pair", "afc", "screenshotr"] }
+```
+
+The full feature list:
+
+| Feature | Description |
+|---|---|
+| `afc` | Apple File Conduit for file system access. |
+| `amfi` | Apple mobile file integrity service. |
+| `bt_packet_logger` | Capture Bluetooth packets. |
+| `companion_proxy` | Manage paired Apple Watches. |
+| `core_device` | Access CoreDevice services over RemoteXPC. |
+| `core_device_proxy` | Start a secure tunnel to access protected services. |
+| `crashreportcopymobile` | Copy crash reports. |
+| `debug_proxy` | Send GDB commands to the device. |
+| `diagnostics_relay` | Access device diagnostics information (IORegistry, MobileGestalt, battery, NAND, device control). |
+| `display_stream` | Stream screen capture data and enable CoreDevice HID helpers. |
+| `dvt` | Access Apple developer tools (e.g. Instruments). |
+| `energy_monitor` | Access DVT energy monitoring. |
+| `graphics` | Access DVT graphics data. |
+| `device_info` | Access CoreDevice device information. |
+| `application_listing` | List applications through CoreDevice/DVT paths. |
+| `condition_inducer` | Access the DVT condition inducer service. |
+| `network_monitor` | Access DVT network monitoring. |
+| `sysmontap` | Access DVT system monitor data. |
+| `heartbeat` | Maintain a heartbeat connection. |
+| `house_arrest` | Manage files in app containers. |
+| `installation_proxy` | Manage app installation and uninstallation. |
+| `installcoordination_proxy` | Manage app installation coordination. |
+| `location_simulation` | Simulate GPS locations on the device. |
+| `mdns` | Match Bonjour/mDNS auth-tag device records. |
+| `misagent` | Manage provisioning profiles on the device. |
+| `mobile_image_mounter` | Manage DDI images. |
+| `mobileactivationd` | Activate/Deactivate device. |
+| `mobilebackup2` | Manage backups. |
+| `pair` | Pair the device. |
+| `pcapd` | Capture network packets. |
+| `preboard_service` | Interface with Preboard. |
+| `remote_pairing` | Support Remote Pairing / rppairing flows. |
+| `restore_service` | Restore service (recovery/reboot). |
+| `rsd` | Discover RSD services from RemoteXPC handshake responses. |
+| `screenshotr` | Take screenshots. |
+| `springboardservices` | Control SpringBoard (icons, wallpaper, orientation, etc.). |
+| `syslog_relay` | Relay system logs and OS trace logs from the device. |
+| `tcp` | Connect to devices over TCP. |
+| `tunnel_tcp_stack` | Naive in-process TCP stack for `core_device_proxy`. |
+| `tunnel_tcp_stack_pcap` | Add pcap output support to the in-process TCP tunnel. |
+| `tss` | Make requests to Apple's TSS servers. Partial support. |
+| `tunneld` | Interface with pymobiledevice3's tunneld. |
+| `usbmuxd` | Connect using the usbmuxd daemon. |
+| `wasm` | Enable `wasm32-unknown-unknown` support. |
+| `wasm-crypto` | Select the pure-Rust Rustls crypto provider used by WASM builds. |
+| `xpc` | Access protected services via XPC over RSD. |
+| `xctest` | Launch XCTest runners and coordinate modern testmanagerd/XCTest sessions. |
+| `wda` | Minimal WebDriverAgent bootstrap helpers and localhost bridge support. |
+| `notification_proxy` | Post and observe iOS notifications. |
+
+## The `full` feature
+
+To enable everything at once:
+
+```toml
+[dependencies]
+idevice = { version = "0.1.64", features = ["full"] }
+```
+
+## TLS backend
+
+By default, `idevice` uses `aws-lc` for TLS. You can switch to `ring` or
+`openssl` if needed:
+
+```toml
+# Use ring instead of aws-lc
+idevice = { version = "0.1.64", default-features = false, features = ["ring", "usbmuxd"] }
+
+# Use OpenSSL
+idevice = { version = "0.1.64", default-features = false, features = ["openssl", "usbmuxd"] }
+```
+
+<Callout type="info">
+  `aws-lc` is the default because it's fast and widely supported. Use `ring`
+  if you're targeting platforms where `aws-lc` doesn't compile (e.g. Mac
+  Catalyst). Use `openssl` if you need to link against an existing OpenSSL
+  installation.
+</Callout>
