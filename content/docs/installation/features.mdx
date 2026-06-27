@@ -10,7 +10,7 @@ contained in Cargo features. Enable only what you need.
 
 ## Choosing features
 
-```toml
+```toml title="Cargo.toml"
 [dependencies]
 idevice = { version = "0.1.64", features = ["usbmuxd", "pair", "afc", "screenshotr"] }
 ```
@@ -73,7 +73,7 @@ The full feature list:
 
 To enable everything at once:
 
-```toml
+```toml title="Cargo.toml"
 [dependencies]
 idevice = { version = "0.1.64", features = ["full"] }
 ```
@@ -83,7 +83,7 @@ idevice = { version = "0.1.64", features = ["full"] }
 By default, `idevice` uses `aws-lc` for TLS. You can switch to `ring` or
 `openssl` if needed:
 
-```toml
+```toml title="Cargo.toml"
 # Use ring instead of aws-lc
 idevice = { version = "0.1.64", default-features = false, features = ["ring", "usbmuxd"] }
 

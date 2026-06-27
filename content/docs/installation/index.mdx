@@ -13,7 +13,7 @@ import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
 `idevice` requires a recent Rust toolchain (edition 2024). Install via
 [rustup](https://rustup.rs):
 
-```bash
+```bash title="Terminal"
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
@@ -40,7 +40,7 @@ on your host machine.
 
 Add `idevice` to your `Cargo.toml`:
 
-```toml
+```toml title="Cargo.toml"
 [dependencies]
 idevice = { version = "0.1.64", features = ["usbmuxd", "pair"] }
 ```

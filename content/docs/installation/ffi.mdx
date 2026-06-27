@@ -11,14 +11,14 @@ directory.
 
 Build the FFI library:
 
-```bash
+```bash title="Terminal"
 cd ffi
 cargo build --release
 ```
 
 Then compile the examples with CMake:
 
-```bash
+```bash title="Terminal"
 cd ffi/examples
 mkdir build && cd build
 cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release
@@ -33,7 +33,7 @@ Example programs include `afc.c`, `lockdownd.c`, `process_control.c`,
 C++ bindings are provided in the `cpp/` directory, offering smoother and safer
 usage in C++ codebases. Build the examples:
 
-```bash
+```bash title="Terminal"
 cd cpp/examples
 mkdir build && cd build
 cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release
@@ -48,7 +48,7 @@ Example programs include `afc.cpp`, `installation_proxy.cpp`, `screenshot.cpp`,
 Swift bindings and an XCFramework are available in the `swift/` directory.
 Building the XCFramework requires a Mac:
 
-```bash
+```bash title="Terminal"
 just xcframework
 ```
 

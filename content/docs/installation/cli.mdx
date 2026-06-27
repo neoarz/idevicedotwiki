@@ -5,7 +5,7 @@ description: Install the idevice-tools command-line binary from source.
 
 The `idevice-tools` CLI is in the `tools` crate. Install it from source:
 
-```bash
+```bash title="Terminal"
 git clone https://github.com/jkcoxson/idevice.git
 cd idevice
 cargo install --path tools
@@ -23,7 +23,7 @@ This installs the `idevice-tools` binary along with several companion binaries:
 
 To build the entire workspace without installing:
 
-```bash
+```bash title="Terminal"
 git clone https://github.com/jkcoxson/idevice.git
 cd idevice
 cargo build --release
@@ -31,6 +31,6 @@ cargo build --release
 
 To build with all features enabled:
 
-```bash
+```bash title="Terminal"
 cargo build --release --all-features
 ```
