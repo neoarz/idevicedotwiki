@@ -5,6 +5,16 @@
     "---Introduction---",
     "index",
     "installation",
-    "comparisons"
+    "comparisons",
+    "---Guides---",
+    "guides/index",
+    "guides/architecture",
+    "guides/pairing",
+    "guides/ios-17-tunnels",
+    "guides/coredevice-services",
+    "guides/file-app-services",
+    "guides/developer-services",
+    "guides/debugging-logs",
+    "guides/backup-restore"
   ]
 }

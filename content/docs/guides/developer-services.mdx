@@ -1,0 +1,64 @@
+---
+title: Developer Services
+description: DVT, XCTest, WDA, and developer tooling.
+---
+
+Developer services are the services used for profiling, automation, testing,
+and device-control workflows.
+
+## DVT and Instruments
+
+`dvt` is the base feature for Apple developer-tool style services. It covers
+the remote server client and the message format used by instruments-style
+services.
+
+Current DVT areas include:
+
+| Area | What it does |
+|---|---|
+| Process control | Lists, launches, and controls processes through DVT. |
+| Sysmontap | Streams CPU, memory, and process metrics. |
+| Graphics | Monitors graphics and OpenGL performance data. |
+| Network monitor | Streams network connection activity from the device. |
+| Energy monitor | Reads energy and power-related device metrics. |
+| Condition inducer | Enables and disables simulated device conditions. |
+| Application listing | Lists installed applications through the developer service path. |
+| Device info | Reads hardware, network, kernel, and process information. |
+| DVT screenshot | Takes screenshots through the DVT service path. |
+| Location simulation | Sets or clears simulated device location. |
+
+Related modules:
+
+- [`services/dvt/`](https://github.com/jkcoxson/idevice/tree/master/idevice/src/services/dvt)
+
+Useful CLI commands:
+
+```bash
+idevice-tools process_control
+idevice-tools sysmontap
+idevice-tools graphics
+idevice-tools network_monitor
+idevice-tools energy_monitor
+idevice-tools condition_inducer
+idevice-tools application_listing
+idevice-tools device_info
+idevice-tools location_simulation
+```
+
+## XCTest and WDA
+
+`xctest` launches XCTest runners and coordinates modern testmanagerd/XCTest
+sessions. `wda` provides WebDriverAgent bootstrap helpers and a localhost bridge
+layer.
+
+Related modules:
+
+- [`services/dvt/xctest/`](https://github.com/jkcoxson/idevice/tree/master/idevice/src/services/dvt/xctest)
+- [`services/wda.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/wda.rs)
+- [`services/wda_bridge.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/wda_bridge.rs)
+
+Useful CLI command:
+
+```bash
+idevice-tools xctest
+```

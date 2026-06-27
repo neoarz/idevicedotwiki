@@ -1,0 +1,14 @@
+{
+  "title": "Guides",
+  "pages": [
+    "index",
+    "architecture",
+    "pairing",
+    "ios-17-tunnels",
+    "coredevice-services",
+    "file-app-services",
+    "developer-services",
+    "debugging-logs",
+    "backup-restore"
+  ]
+}

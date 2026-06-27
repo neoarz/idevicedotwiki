@@ -1,0 +1,70 @@
+---
+title: File & App Services
+description: AFC, app containers, app install, and developer disk images.
+---
+
+These services cover files, app containers, app install flows, and developer
+images.
+
+| Area | What it does |
+|---|---|
+| AFC | Browses, reads, writes, creates, and removes files. |
+| House Arrest | Opens app containers through an AFC-style connection. |
+| Installation Proxy | Installs, uninstalls, browses, and queries apps. |
+| Install Coordination Proxy | Handles newer app installation coordination flows. |
+| CoreDevice App Service | Lists apps and processes through the CoreDevice path. |
+| Mobile Image Mounter | Mounts developer disk images and related images. |
+
+## File access
+
+`afc` is the Apple File Conduit service. It is the main file-system style API
+used by tools that need to browse, read, write, create, or remove files.
+
+`house_arrest` opens an app container through AFC-style access.
+
+Related modules:
+
+- [`services/afc/`](https://github.com/jkcoxson/idevice/tree/master/idevice/src/services/afc)
+- [`services/house_arrest.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/house_arrest.rs)
+
+Useful CLI commands:
+
+```bash
+idevice-tools afc
+```
+
+## App management
+
+`installation_proxy` handles app install and uninstall flows.
+`installcoordination_proxy` covers newer app installation coordination paths.
+CoreDevice also has `app_service` for newer RSD/CoreDevice app workflows.
+
+Related modules:
+
+- [`services/installation_proxy.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/installation_proxy.rs)
+- [`services/installcoordination_proxy.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/installcoordination_proxy.rs)
+- [`services/core_device/app_service.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/app_service.rs)
+
+Useful CLI commands:
+
+```bash
+idevice-tools ideviceinstaller
+idevice-tools instproxy
+idevice-tools app_service
+idevice-tools application_listing
+```
+
+## Developer images
+
+`mobile_image_mounter` mounts developer disk images and related images needed
+by some developer services.
+
+Related module:
+
+- [`services/mobile_image_mounter.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/mobile_image_mounter.rs)
+
+Useful CLI command:
+
+```bash
+idevice-tools mounter
+```

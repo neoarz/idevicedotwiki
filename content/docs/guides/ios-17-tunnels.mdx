@@ -1,0 +1,45 @@
+---
+title: iOS 17+ Tunnels
+description: RemoteXPC, RSD, and CoreDevice tunnel concepts.
+---
+
+iOS 17+ moved many developer services away from the older lockdown service
+path.
+
+The newer path uses:
+
+- RSD for service discovery.
+- RemoteXPC for XPC messages over HTTP/2.
+- CoreDevice tunnel services for protected developer features.
+- Remote pairing records for trusted hosts.
+
+The tunnel is the bridge between the device and newer protected services. Once
+the path is established, CoreDevice and DVT-style clients can connect through
+RSD instead of asking lockdown for a service port.
+
+Relevant features:
+
+- `rsd`
+- `xpc`
+- `remote_pairing`
+- `core_device`
+- `core_device_proxy`
+- `tunnel_tcp_stack`
+- `tunneld`
+
+Useful CLI commands:
+
+```bash
+idevice-tools remotexpc
+idevice-tools rppairing
+idevice-tools screencapture
+idevice-tools hid
+```
+
+## Related modules
+
+- [`services/rsd.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/rsd.rs): RSD handshake and service discovery.
+- [`xpc/`](https://github.com/jkcoxson/idevice/tree/master/idevice/src/xpc): RemoteXPC transport and message encoding.
+- [`services/core_device_proxy.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device_proxy.rs): CoreDevice proxy service.
+- [`tunnel.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/tunnel.rs): tunnel support used by CoreDevice proxy and remote pairing.
+- [`tunneld.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/tunneld.rs): integration with pymobiledevice3's `tunneld`.

@@ -1,0 +1,76 @@
+---
+title: Debugging & Logs
+description: Syslog, OS trace, debug proxy, PCAP, crash logs, and Bluetooth capture.
+---
+
+These services are useful when inspecting what a device or app is doing.
+
+| Area | What it does |
+|---|---|
+| Syslog Relay | Streams system logs from the device. |
+| OS Trace Relay | Streams OS trace logs. |
+| Debug Proxy | Opens the device debug proxy service. |
+| PCAPD | Captures network packets from the device. |
+| Bluetooth Packet Logger | Captures Bluetooth packet logs. |
+| Crash Report Copy | Copies crash reports from the device. |
+
+## Logs and traces
+
+`syslog_relay` streams system logs. `os_trace_relay` streams OS trace logs.
+
+Related modules:
+
+- [`services/syslog_relay.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/syslog_relay.rs)
+- [`services/os_trace_relay.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/os_trace_relay.rs)
+
+Useful CLI commands:
+
+```bash
+idevice-tools syslog_relay
+idevice-tools os_trace_relay
+```
+
+## Debugging
+
+`debug_proxy` connects to the device debug proxy service.
+
+Related module:
+
+- [`services/debug_proxy.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/debug_proxy.rs)
+
+Useful CLI command:
+
+```bash
+idevice-tools debug_proxy
+```
+
+## Capture
+
+`pcapd` captures network packets from the device. `bt_packet_logger` captures
+Bluetooth packets.
+
+Related modules:
+
+- [`services/pcapd.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/pcapd.rs)
+- [`services/bt_packet_logger.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/bt_packet_logger.rs)
+
+Useful CLI commands:
+
+```bash
+idevice-tools pcapd
+idevice-tools bt_packet_logger
+```
+
+## Crash reports
+
+`crashreportcopymobile` copies crash reports from the device.
+
+Related module:
+
+- [`services/crashreportcopymobile.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/crashreportcopymobile.rs)
+
+Useful CLI command:
+
+```bash
+idevice-tools crash_logs
+```

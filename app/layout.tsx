@@ -13,12 +13,37 @@ const mono = Geist_Mono({
   variable: '--font-mono',
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://idevice.wiki';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: 'idevice docs',
     template: '%s | idevice docs',
   },
   description: 'Documentation for the pure Rust library and CLI for interacting with iOS services.',
+  icons: {
+    icon: '/idevice-icon.webp',
+    apple: '/idevice-icon.webp',
+  },
+  openGraph: {
+    title: 'idevice docs',
+    description: 'Documentation for the pure Rust library and CLI for interacting with iOS services.',
+    images: [
+      {
+        url: '/idevice-icon.webp',
+        width: 80,
+        height: 80,
+        alt: 'idevice',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'idevice docs',
+    description: 'Documentation for the pure Rust library and CLI for interacting with iOS services.',
+    images: ['/idevice-icon.webp'],
+  },
 };
 
 export default function Layout({ children }: LayoutProps<'/'>) {

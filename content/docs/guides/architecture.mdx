@@ -1,0 +1,48 @@
+---
+title: Architecture
+description: How idevice is layered internally.
+---
+
+`idevice` is built around a few small layers:
+
+1. `usbmuxd` finds USB-connected devices and opens sockets to them.
+2. `LockdownClient` starts device services through lockdown on port `62078`.
+3. `IdeviceProvider` hides where the connection comes from.
+4. `IdeviceService` gives services a shared `connect()` pattern.
+5. `RsdService` covers services reached through RSD on newer iOS versions.
+6. `RemoteXpcClient` speaks XPC over HTTP/2.
+7. `CoreDeviceServiceClient` wraps newer CoreDevice services.
+
+Most pre-iOS 17 services use this path:
+
+```txt
+usbmuxd -> lockdown -> start_service -> service port -> optional TLS
+```
+
+Newer iOS 17+ developer services usually use this path:
+
+```txt
+RSD handshake -> RemoteXPC -> CoreDevice tunnel -> XPC service
+```
+
+## Main traits
+
+`IdeviceProvider` is the main abstraction for opening connections. A provider
+can represent a USB device through `usbmuxd`, a network device over TCP, or a
+newer RSD/CoreDevice path.
+
+`IdeviceService` is the shared pattern for lockdown-backed services. A service
+declares its service name, asks lockdown to start it, opens the returned port,
+and wraps the stream.
+
+`RsdService` is the equivalent shape for services reached through RSD. These
+services do not use the older lockdown `start_service` flow.
+
+## Where code lives
+
+- [`provider.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/provider.rs): provider traits and connection abstraction.
+- [`usbmuxd/`](https://github.com/jkcoxson/idevice/tree/master/idevice/src/usbmuxd): usbmuxd client and packet handling.
+- [`services/lockdown.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/lockdown.rs): lockdown service startup.
+- [`xpc/`](https://github.com/jkcoxson/idevice/tree/master/idevice/src/xpc): RemoteXPC message format and HTTP/2 transport.
+- [`services/core_device/`](https://github.com/jkcoxson/idevice/tree/master/idevice/src/services/core_device): CoreDevice service clients.
+- [`remote_pairing/`](https://github.com/jkcoxson/idevice/tree/master/idevice/src/remote_pairing): rppairing protocol support.

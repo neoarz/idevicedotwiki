@@ -1,0 +1,42 @@
+---
+title: CoreDevice Services
+description: Newer CoreDevice services exposed by idevice.
+---
+
+CoreDevice services are reached through the iOS 17+ RSD/RemoteXPC path.
+
+Current areas covered in `idevice` include:
+
+| Area | What it does |
+|---|---|
+| App service | Lists apps, processes, and app-related CoreDevice state. |
+| HID input | Sends touch, keyboard, button, scroll, and pointer-style input. |
+| Display stream | Receives screen video data used by streaming and HID workflows. |
+| Screen capture | Takes screenshots through `screencaptureservice`. |
+| Pasteboard | Reads, writes, lists, and watches device clipboard contents. |
+| Orientation | Reads and changes device orientation through CoreDevice. |
+| Location service | Lists built-in location simulation scenarios. |
+| Diagnostics service | Retrieves sysdiagnose data over CoreDevice. |
+
+Useful CLI commands:
+
+```bash
+idevice-tools app_service
+idevice-tools hid
+idevice-tools screencapture
+idevice-tools screencaptureservice
+idevice-tools pasteboard
+idevice-tools rotate
+idevice-tools location
+idevice-tools diagnosticsservice
+```
+
+Related source modules:
+
+- [`services/core_device/app_service.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/app_service.rs)
+- [`services/core_device/hid.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/hid.rs)
+- [`services/core_device/pasteboard_service.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/pasteboard_service.rs)
+- [`services/core_device/orientation_service.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/orientation_service.rs)
+- [`services/core_device/location_service.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/location_service.rs)
+- [`services/core_device/screencaptureservices.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/screencaptureservices.rs)
+- [`services/core_device/diagnosticsservice.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/diagnosticsservice.rs)

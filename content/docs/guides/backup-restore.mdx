@@ -1,0 +1,51 @@
+---
+title: Backup & Restore
+description: MobileBackup2, restore services, and TSS.
+---
+
+Backup and restore support is split across MobileBackup2, restore services,
+and TSS signing helpers.
+
+| Area | What it does |
+|---|---|
+| MobileBackup2 | Handles backup workflows. |
+| Restore Service | Handles restore-mode operations like recovery and reboot. |
+| TSS | Talks to Apple's signing servers. Partial support. |
+
+## MobileBackup2
+
+`mobilebackup2` is the service used for backup workflows.
+
+Related module:
+
+- [`services/mobilebackup2.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/mobilebackup2.rs)
+
+Useful CLI command:
+
+```bash
+idevice-tools mobilebackup2
+```
+
+## Restore service
+
+`restore_service` covers restore-mode operations such as entering recovery,
+rebooting, and reading restore-related information.
+
+Related module:
+
+- [`services/restore_service.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/restore_service.rs)
+
+Useful CLI command:
+
+```bash
+idevice-tools restore_service
+```
+
+## TSS
+
+`tss` makes requests to Apple's TSS signing servers. In `idevice`, this is
+currently documented as partial support.
+
+Related module:
+
+- [`tss.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/tss.rs)
