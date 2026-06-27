@@ -1,0 +1,91 @@
+---
+title: Providers
+description: Create reusable device connection providers for services.
+---
+
+A provider is the object you pass to service clients. It knows how to open new
+connections to the same device and how to fetch the pairing file when a service
+needs a secure session.
+
+USB device selection uses `UsbmuxdProvider`:
+
+```rust title="src/main.rs"
+use idevice::usbmuxd::{UsbmuxdAddr, UsbmuxdConnection};
+
+async fn provider_for_udid(
+    udid: &str,
+) -> Result<idevice::provider::UsbmuxdProvider, Box<dyn std::error::Error>> {
+    let addr = UsbmuxdAddr::from_env_var()?;
+    let mut usbmuxd = UsbmuxdConnection::new(addr.to_socket().await?, 0);
+
+    // Pick the exact device your application wants to talk to.
+    let device = usbmuxd.get_device(udid).await?;
+
+    Ok(device.to_provider(addr, "my-app"))
+}
+```
+
+For quick tools, taking the first connected device is fine:
+
+```rust title="src/main.rs"
+let addr = UsbmuxdAddr::from_env_var()?;
+let mut usbmuxd = UsbmuxdConnection::new(addr.to_socket().await?, 0);
+let device = usbmuxd
+    .get_devices()
+    .await?
+    .into_iter()
+    .next()
+    .ok_or("no devices connected")?;
+
+let provider = device.to_provider(addr, "my-app");
+```
+
+For real apps, choose by UDID. The first device can change whenever another
+phone is plugged in.
+
+## TCP Provider
+
+Use `TcpProvider` when you already have a reachable device host and a pairing
+file on disk:
+
+```rust title="src/main.rs"
+use std::net::IpAddr;
+
+use idevice::{
+    pairing_file::PairingFile,
+    provider::TcpProvider,
+};
+
+let pairing_file = PairingFile::read_from_file("./pairing_file.plist")?;
+
+let provider = TcpProvider {
+    addr: "10.7.0.2".parse::<IpAddr>()?,
+    scope_id: None,
+    pairing_file,
+    label: "my-app".to_string(),
+};
+```
+
+Enable the `tcp` feature when you use this path:
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["tcp"] }
+```
+
+## How This Maps To The CLI
+
+The global CLI flags map directly to provider setup:
+
+| CLI | Rust |
+| --- | --- |
+| `--udid <device-udid>` | `usbmuxd.get_device(udid)` |
+| `--host <device-ip>` | `TcpProvider { addr, ... }` |
+| `--pairing-file ./pairing_file.plist` | `PairingFile::read_from_file(...)` |
+
+## Source
+
+- [`idevice/src/provider.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/provider.rs)
+- [`idevice/src/usbmuxd/mod.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/usbmuxd/mod.rs)
+- [`idevice/src/pairing_file.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/pairing_file.rs)
+- [`tools/src/common.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/common.rs)

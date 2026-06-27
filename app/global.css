@@ -22,3 +22,14 @@ html > body[data-scroll-locked] {
 body {
   letter-spacing: 0;
 }
+
+.docs-page-description {
+  margin-bottom: 0.5rem;
+}
+
+.docs-header-divider {
+  margin: 0 0 0.875rem;
+  height: 1px;
+  width: 100%;
+  background: rgb(58 58 64);
+}

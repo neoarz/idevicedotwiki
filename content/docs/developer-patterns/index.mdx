@@ -1,0 +1,22 @@
+---
+title: Overview
+description: Patterns for building applications on top of idevice.
+---
+
+This section is for application and tooling authors. It covers the core patterns
+used by the examples in these docs.
+
+- [Providers](/docs/developer-patterns/providers): choose a device and create connections to it.
+- [Services](/docs/developer-patterns/services): connect to lockdown services and use service clients.
+
+The short version:
+
+```rust title="src/main.rs"
+use idevice::{IdeviceService, afc::AfcClient};
+
+let provider = first_provider().await?;
+let mut afc = AfcClient::connect(&provider).await?;
+```
+
+The provider knows how to reach the device. The service client knows which iOS
+service it needs and how to speak that service's protocol.

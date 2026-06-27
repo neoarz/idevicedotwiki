@@ -15,8 +15,9 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
   return (
     <DocsPage toc={page.data.toc} full={page.data.full}>
       <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription>{page.data.description}</DocsDescription>
+      <DocsDescription className="docs-page-description">{page.data.description}</DocsDescription>
       <DocsBody>
+        <div aria-hidden className="docs-header-divider" />
         <MDX
           components={getMDXComponents({
             a: createRelativeLink(source, page),

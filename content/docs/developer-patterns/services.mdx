@@ -1,0 +1,86 @@
+---
+title: Services
+description: Connect to iOS services through idevice service clients.
+---
+
+Service clients that implement `IdeviceService` share the same
+`connect(&provider)` entry point:
+
+```rust title="src/main.rs"
+use idevice::{IdeviceService, syslog_relay::SyslogRelayClient};
+
+let provider = first_provider().await?;
+let mut syslog = SyslogRelayClient::connect(&provider).await?;
+```
+
+Under the hood, the default `connect` flow does the repetitive work:
+
+1. Connects to Lockdown.
+2. Starts a session using the provider's pairing file.
+3. Asks Lockdown to start the requested service.
+4. Opens a device connection to the returned port.
+5. Enables TLS when the service requires it.
+6. Builds the service client from the connected stream.
+
+That is why the basic examples only need a provider and the service type.
+
+## Service Names
+
+Each service client declares the iOS service name it needs:
+
+```rust title="src/main.rs"
+impl IdeviceService for SyslogRelayClient {
+    fn service_name() -> std::borrow::Cow<'static, str> {
+        "com.apple.syslog_relay".into()
+    }
+
+    async fn from_stream(idevice: idevice::Idevice) -> Result<Self, idevice::IdeviceError> {
+        Ok(Self::new(idevice))
+    }
+}
+```
+
+You implement this when adding support for a new Lockdown-started service.
+
+## When Services Are Different
+
+These service areas use a different setup:
+
+| Service area | Difference |
+| --- | --- |
+| `LockdownClient` | It is the service used to start other services. |
+| `AfcClient::new_afc2` | Connects to `com.apple.afc2` instead of normal AFC. |
+| House Arrest | Starts from `HouseArrestClient`, then vends an AFC client scoped to an app. |
+| DVT Remote Server | Uses `RemoteServerClient`; the code supports Lockdown-started Instruments services and an RSD service name of `com.apple.instruments.dtservicehub`. |
+| CoreDevice services | Implement `RsdService` with `com.apple.coredevice.*` service names and are reached through the RSD path. The bundled tools create that path through `CoreDeviceProxy` when talking over USB. |
+| Long-running streams | Clients like syslog stay open until you stop reading or cancel the task. |
+
+## Error Handling
+
+Keep the setup boundary clear in application code. A failed provider points to
+device discovery or transport setup. A failed service connection points to
+pairing, trust, feature support, or service availability.
+
+```rust title="src/main.rs"
+use idevice::{IdeviceService, syslog_relay::SyslogRelayClient};
+
+let provider = first_provider().await?;
+
+let mut syslog = match SyslogRelayClient::connect(&provider).await {
+    Ok(client) => client,
+    Err(error) => {
+        eprintln!("failed to connect to syslog relay: {error}");
+        return Ok(());
+    }
+};
+```
+
+## Source
+
+- [`idevice/src/lib.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/lib.rs)
+- [`idevice/src/services/syslog_relay.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/syslog_relay.rs)
+- [`idevice/src/services/afc/mod.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/afc/mod.rs)
+- [`idevice/src/services/lockdown.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/lockdown.rs)
+- [`idevice/src/services/dvt/mod.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/dvt/mod.rs)
+- [`idevice/src/services/core_device/app_service.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/app_service.rs)
+- [`idevice/src/services/core_device_proxy.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device_proxy.rs)

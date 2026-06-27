@@ -13,13 +13,13 @@ description: How idevice is layered internally.
 6. `RemoteXpcClient` speaks XPC over HTTP/2.
 7. `CoreDeviceServiceClient` wraps newer CoreDevice services.
 
-Most pre-iOS 17 services use this path:
+Lockdown-backed services use this path:
 
 ```txt
 usbmuxd -> lockdown -> start_service -> service port -> optional TLS
 ```
 
-Newer iOS 17+ developer services usually use this path:
+iOS 17+ RSD/CoreDevice developer services use this path:
 
 ```txt
 RSD handshake -> RemoteXPC -> CoreDevice tunnel -> XPC service
