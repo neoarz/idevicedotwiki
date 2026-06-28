@@ -1,0 +1,82 @@
+---
+title: RSD
+description: Discover and connect to Remote Service Discovery services.
+---
+
+RSD discovers services advertised through the RemoteXPC handshake. `RsdHandshake`
+parses the service table and connects typed `RsdService` clients by advertised
+port.
+
+## Use It For
+
+- Listing RemoteXPC/RSD services.
+- Connecting to clients that implement `RsdService`.
+- Reading advertised service metadata such as port, entitlement, and
+  `UsesRemoteXPC`.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["rsd", "xpc"] }
+```
+
+`rsd` enables `xpc` in the crate feature graph.
+
+## Transport Path
+
+```txt
+RSD socket -> RemoteXPC handshake -> Services dictionary -> service port
+```
+
+Over USB for iOS 17+ service access, the bundled tools create the RSD socket
+through `CoreDeviceProxy` and a software tunnel.
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::rsd::RsdHandshake;
+
+let mut handshake = RsdHandshake::new(rsd_stream).await?;
+
+for (name, service) in &handshake.services {
+    println!("{name}: port={} xpc={}", service.port, service.uses_remote_xpc);
+}
+```
+
+Connect a typed RSD service:
+
+```rust title="src/main.rs"
+let client = handshake
+    .connect::<YourRsdService>(&mut rsd_provider)
+    .await?;
+```
+
+## CLI Equivalent
+
+List RemoteXPC services through the bundled USB tunnel path:
+
+```bash title="Terminal"
+idevice-tools remotexpc
+```
+
+Remote pairing and tunnel inspection:
+
+```bash title="Terminal"
+idevice-tools rppairing tunnel
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Missing `Services` dictionary | The stream did not complete the expected RSD handshake. |
+| `ServiceNotFound` | The requested `RsdService::rsd_service_name()` is not advertised. |
+| RSD connect failed | The tunnel/provider could not connect to the advertised port. |
+
+## Source
+
+- [`idevice/src/services/rsd.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/rsd.rs)
+- [`idevice/src/provider.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/provider.rs)
+- [`tools/src/remotexpc.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/remotexpc.rs)
+- [`tools/src/rppairing.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/rppairing.rs)

@@ -1,0 +1,88 @@
+---
+title: Pairing
+description: Create and save local pairing records for trusted device sessions.
+---
+
+Pairing is not a separate iOS service module in `idevice`. It is implemented by
+`LockdownClient::pair` behind the `pair` feature, then saved through `usbmuxd`.
+
+## Use It For
+
+- Creating a pairing record for a trusted host.
+- Saving that record to `usbmuxd`.
+- Starting secure sessions for services that require trust.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "pair"] }
+uuid = { version = "1", features = ["v4"] }
+```
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    lockdown::LockdownClient,
+    usbmuxd::{UsbmuxdAddr, UsbmuxdConnection},
+};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let addr = UsbmuxdAddr::from_env_var()?;
+    let mut usbmuxd = UsbmuxdConnection::new(addr.to_socket().await?, 0);
+    let device = usbmuxd.get_device("<device-udid>").await?;
+    let provider = device.to_provider(addr, "my-pairing-tool");
+
+    let mut lockdown = LockdownClient::connect(&provider).await?;
+    let host_id = uuid::Uuid::new_v4().to_string().to_uppercase();
+    let system_buid = usbmuxd.get_buid().await?;
+
+    let mut pairing_file = lockdown
+        .pair(host_id, system_buid, Some("My App"))
+        .await?;
+
+    lockdown.start_session(&pairing_file).await?;
+    pairing_file.udid = Some(device.udid.clone());
+
+    let bytes = pairing_file.serialize()?;
+    usbmuxd.save_pair_record(&device.udid, bytes).await?;
+
+    Ok(())
+}
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools pair
+```
+
+Pair a specific device:
+
+```bash title="Terminal"
+idevice-tools pair <device-udid>
+```
+
+Set the host name reported to the device:
+
+```bash title="Terminal"
+idevice-tools pair --name "My Mac" <device-udid>
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Trust prompt does not complete | Unlock the device and accept the trust dialog. |
+| Pairing record test fails | The generated record could not start a session with Lockdown. |
+| Saved pairing record is missing later | Confirm `SavePairRecord` succeeded and the same UDID is used. |
+
+## Source
+
+- [`idevice/src/services/lockdown.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/lockdown.rs)
+- [`idevice/src/pairing_file.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/pairing_file.rs)
+- [`idevice/src/usbmuxd/mod.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/usbmuxd/mod.rs)
+- [`tools/src/pair.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/pair.rs)

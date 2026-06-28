@@ -1,0 +1,82 @@
+---
+title: usbmuxd
+description: Discover devices and open USB service connections through usbmuxd.
+---
+
+`usbmuxd` is the host-side daemon used for USB device discovery, pairing record
+storage, and opening connections to device service ports.
+
+## Use It For
+
+- Listing connected devices.
+- Selecting a device by UDID.
+- Reading and saving pairing records.
+- Opening a socket to a device service port.
+- Listening for attach and detach events.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd"] }
+```
+
+## Transport Path
+
+```txt
+host app -> usbmuxd socket -> device service port
+```
+
+On Unix, the default socket path is `/var/run/usbmuxd`. `UsbmuxdAddr::from_env_var()`
+also reads `USBMUXD_SOCKET_ADDRESS`.
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::usbmuxd::{UsbmuxdAddr, UsbmuxdConnection};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let addr = UsbmuxdAddr::from_env_var()?;
+    let mut usbmuxd = UsbmuxdConnection::new(addr.to_socket().await?, 0);
+
+    for device in usbmuxd.get_devices().await? {
+        println!("{} ({:?})", device.udid, device.connection_type);
+    }
+
+    Ok(())
+}
+```
+
+Create a provider for a specific device:
+
+```rust title="src/main.rs"
+let device = usbmuxd.get_device("<device-udid>").await?;
+let provider = device.to_provider(addr, "my-app");
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice_id
+```
+
+Listen for attach and detach events:
+
+```bash title="Terminal"
+idevice_id -l
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| `DeviceNotFound` | The UDID does not match a device returned by `get_devices()`. |
+| `ConnectionRefused` | The requested service port is not accepting a connection. |
+| Missing pair record | Pair the device before connecting to services that require a secure session. |
+
+## Source
+
+- [`idevice/src/usbmuxd/mod.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/usbmuxd/mod.rs)
+- [`idevice/src/provider.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/provider.rs)
+- [`tools/src/idevice_id.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/idevice_id.rs)

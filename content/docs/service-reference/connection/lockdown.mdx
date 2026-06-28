@@ -1,0 +1,84 @@
+---
+title: Lockdown
+description: Start sessions, read device values, and launch device services.
+---
+
+Lockdown is the device management service on port `62078`. `idevice` uses it to
+read device values, start secure sessions, and request service ports with
+`StartService`.
+
+## Use It For
+
+- Reading device information with `GetValue`.
+- Setting lockdown values with `SetValue`.
+- Starting a TLS session from a pairing file.
+- Starting lockdown-backed services.
+- Entering recovery mode.
+
+## Feature Flag
+
+`LockdownClient` is part of the base service tree. Add the transport feature you
+use to reach the device, such as `usbmuxd` or `tcp`.
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd"] }
+```
+
+## Service Name
+
+| Path | Value |
+| --- | --- |
+| Lockdown service | `com.apple.mobile.lockdown` |
+| Default port | `62078` |
+| RSD service name | `com.apple.mobile.lockdown.remote.trusted` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{IdeviceService, lockdown::LockdownClient};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let provider = first_provider().await?;
+    let mut lockdown = LockdownClient::connect(&provider).await?;
+
+    let product_version = lockdown.get_value(Some("ProductVersion"), None).await?;
+    println!("{product_version:?}");
+
+    Ok(())
+}
+```
+
+Start a secure session when you need access to paired services:
+
+```rust title="src/main.rs"
+let pairing_file = provider.get_pairing_file().await?;
+let legacy = lockdown.start_session(&pairing_file).await?;
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools lockdown get ProductVersion
+```
+
+Skip session startup for values that do not need a pairing session:
+
+```bash title="Terminal"
+idevice-tools lockdown --no-session get ProductVersion
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Missing pairing file | Pair the device or pass the correct pairing file for TCP usage. |
+| `ServiceNotFound` after `start_service` | The device does not expose that service in the current mode or OS path. |
+| TLS/session failure | Confirm the device trusts the host and the pairing record belongs to the device. |
+
+## Source
+
+- [`idevice/src/services/lockdown.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/lockdown.rs)
+- [`idevice/src/lib.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/lib.rs)
+- [`tools/src/lockdown.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/lockdown.rs)

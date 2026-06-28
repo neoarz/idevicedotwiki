@@ -1,0 +1,70 @@
+---
+title: CoreDevice Proxy
+description: Establish the CoreDevice CDTunnel used for iOS 17+ service access.
+---
+
+`CoreDeviceProxy` connects to the device service
+`com.apple.internal.devicecompute.CoreDeviceProxy` and performs the CDTunnel
+handshake. The tunnel carries raw IPv6 packets and exposes tunnel metadata,
+including the device's RSD port.
+
+## Use It For
+
+- Creating the USB tunnel used to reach iOS 17+ RSD services.
+- Reading tunnel addresses, MTU, and server RSD port.
+- Creating the in-process TCP adapter with `tunnel_tcp_stack`.
+
+## Feature Flags
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["core_device_proxy", "tunnel_tcp_stack"] }
+```
+
+Use `usbmuxd` too when connecting over USB through a normal provider.
+
+## Service Name
+
+```txt
+com.apple.internal.devicecompute.CoreDeviceProxy
+```
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{IdeviceService, core_device_proxy::CoreDeviceProxy};
+
+let proxy = CoreDeviceProxy::connect(&provider).await?;
+let rsd_port = proxy.tunnel_info().server_rsd_port;
+
+let adapter = proxy.create_software_tunnel()?;
+let mut adapter = adapter.to_async_handle();
+let rsd_stream = adapter.connect(rsd_port).await?;
+```
+
+From there, pass `rsd_stream` into `RsdHandshake::new(...)`.
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools remotexpc
+```
+
+```bash title="Terminal"
+idevice-tools rppairing tunnel
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| CoreDeviceProxy connect failed | The device did not start `com.apple.internal.devicecompute.CoreDeviceProxy`. |
+| Software tunnel failed | Build with `tunnel_tcp_stack` and confirm tunnel setup succeeded. |
+| RSD connect failed | Use `proxy.tunnel_info().server_rsd_port` for the RSD connection. |
+
+## Source
+
+- [`idevice/src/services/core_device_proxy.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device_proxy.rs)
+- [`idevice/src/tunnel.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/tunnel.rs)
+- [`tools/src/remotexpc.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/remotexpc.rs)
+- [`tools/src/rppairing.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/rppairing.rs)

@@ -1,0 +1,10 @@
+{
+  "title": "Connection",
+  "pages": [
+    "usbmuxd",
+    "lockdown",
+    "pairing",
+    "rsd",
+    "coredevice-proxy"
+  ]
+}
