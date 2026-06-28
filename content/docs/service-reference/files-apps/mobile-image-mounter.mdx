@@ -1,0 +1,74 @@
+---
+title: Mobile Image Mounter
+description: Mount developer, personalized, and cryptex images.
+---
+
+`ImageMounter` connects to `com.apple.mobile.mobile_image_mounter`. It manages
+mounted images and contains helpers for developer disk images, personalized
+images, cryptex images, and TSS-backed manifest flows.
+
+## Use It For
+
+- Listing mounted images.
+- Looking up image signatures.
+- Uploading and mounting images.
+- Querying developer mode and personalization data.
+- Mounting personalized images through the RSD path.
+
+## Feature Flags
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "mobile_image_mounter"] }
+```
+
+Enable `tss` for TSS manifest requests and `rsd` for RSD mounter usage.
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown service | `com.apple.mobile.mobile_image_mounter` |
+| RSD service | `com.apple.mobile.mobile_image_mounter.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{IdeviceService, mobile_image_mounter::ImageMounter};
+
+let provider = first_provider().await?;
+let mut mounter = ImageMounter::connect(&provider).await?;
+
+let mounted = mounter.copy_devices().await?;
+println!("{mounted:#?}");
+
+let developer_mode = mounter.query_developer_mode_status().await?;
+println!("developer mode: {developer_mode}");
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools mounter list
+idevice-tools mounter lookup
+idevice-tools mounter mount --image ./DeveloperDiskImage.dmg --signature ./DeveloperDiskImage.dmg.signature
+idevice-tools mounter unmount
+```
+
+For iOS 17+ personalized image mounting, the CLI also accepts `--manifest` and
+`--trustcache`.
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Mount fails | Check image type, image bytes, and signature or manifest inputs. |
+| Personalized mount fails | Confirm the manifest, trust cache, and personalization data match the device. |
+| Device stops responding | The source notes that Lockdown should be established and queried after creating a mounter client. |
+
+## Source
+
+- [`idevice/src/services/mobile_image_mounter.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/mobile_image_mounter.rs)
+- [`tools/src/mounter.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/mounter.rs)
+- [`ffi/examples/mounter.c`](https://github.com/jkcoxson/idevice/blob/master/ffi/examples/mounter.c)
+- [`ffi/examples/mount_personalized.c`](https://github.com/jkcoxson/idevice/blob/master/ffi/examples/mount_personalized.c)

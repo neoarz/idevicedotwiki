@@ -1,4 +1,11 @@
 {
   "title": "Files & Apps",
-  "pages": []
+  "pages": [
+    "afc",
+    "house-arrest",
+    "installation-proxy",
+    "install-coordination-proxy",
+    "mobile-image-mounter",
+    "misagent"
+  ]
 }

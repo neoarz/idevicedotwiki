@@ -23,6 +23,7 @@
     "---Service Reference---",
     "service-reference/index",
     "service-reference/connection",
+    "service-reference/files-apps",
     "---Examples---",
     "examples/index",
     "examples/list-devices",

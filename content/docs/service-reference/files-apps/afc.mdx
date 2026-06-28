@@ -1,0 +1,73 @@
+---
+title: AFC
+description: Read and write files through Apple File Conduit.
+---
+
+AFC exposes file operations through `AfcClient`. The normal AFC service uses
+`com.apple.afc`; `AfcClient::new_afc2` connects to `com.apple.afc2`.
+
+## Use It For
+
+- Listing directories.
+- Reading and writing files.
+- Creating and removing paths.
+- Reading file and filesystem metadata.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "afc"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Normal AFC | `com.apple.afc` |
+| AFC2 | `com.apple.afc2` |
+| RSD AFC | `com.apple.afc.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    afc::{AfcClient, opcode::AfcFopenMode},
+};
+
+let provider = first_provider().await?;
+let mut afc = AfcClient::connect(&provider).await?;
+
+for entry in afc.list_dir("/").await? {
+    println!("{entry}");
+}
+
+let mut file = afc.open("/path/on/device", AfcFopenMode::RdOnly).await?;
+let bytes = file.read_entire().await?;
+file.close().await?;
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools afc list /
+idevice-tools afc download /path/on/device ./local-file
+idevice-tools afc upload ./local-file /path/on/device
+idevice-tools afc info /path/on/device
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Permission denied | The path is outside the exposed AFC jail. |
+| File open failure | Check the path and `AfcFopenMode`. |
+| Missing pairing file | Pair the device before connecting through Lockdown-started AFC. |
+
+## Source
+
+- [`idevice/src/services/afc/mod.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/afc/mod.rs)
+- [`idevice/src/services/afc/file.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/afc/file.rs)
+- [`tools/src/afc.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/afc.rs)
+- [`cpp/examples/afc.cpp`](https://github.com/jkcoxson/idevice/blob/master/cpp/examples/afc.cpp)

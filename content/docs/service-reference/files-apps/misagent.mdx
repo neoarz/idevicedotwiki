@@ -1,0 +1,63 @@
+---
+title: Misagent
+description: Install, remove, and list provisioning profiles.
+---
+
+`MisagentClient` connects to the iOS Mobile Installation Agent service. It
+manages provisioning profiles through install, remove, and copy-all operations.
+
+## Use It For
+
+- Installing provisioning profiles.
+- Removing provisioning profiles by ID.
+- Reading installed provisioning profiles.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "misagent"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown service | `com.apple.misagent` |
+| RSD service | `com.apple.misagent.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{IdeviceService, misagent::MisagentClient};
+
+let provider = first_provider().await?;
+let mut misagent = MisagentClient::connect(&provider).await?;
+
+let profile = tokio::fs::read("./profile.mobileprovision").await?;
+misagent.install(profile).await?;
+
+let profiles = misagent.copy_all().await?;
+println!("{} profiles installed", profiles.len());
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools misagent list
+idevice-tools misagent install ./profile.mobileprovision
+idevice-tools misagent remove <profile-id>
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| `MisagentFailure` | The device returned a non-zero status for the operation. |
+| Install fails | Check the profile bytes and whether the device permits installing it. |
+| Remove fails | Confirm the profile ID exists on the device. |
+
+## Source
+
+- [`idevice/src/services/misagent.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/misagent.rs)
+- [`tools/src/misagent.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/misagent.rs)

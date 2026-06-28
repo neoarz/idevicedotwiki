@@ -1,0 +1,70 @@
+---
+title: House Arrest
+description: Expose an app container or Documents directory as an AFC client.
+---
+
+House Arrest starts from `HouseArrestClient` and returns an `AfcClient` scoped to
+one installed app.
+
+## Use It For
+
+- Accessing an app's `Documents` directory.
+- Accessing an app's container.
+- Reusing AFC operations against app-scoped storage.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "house_arrest"] }
+```
+
+`house_arrest` enables `afc` in the crate feature graph.
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown service | `com.apple.mobile.house_arrest` |
+| RSD service | `com.apple.mobile.house_arrest.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{IdeviceService, house_arrest::HouseArrestClient};
+
+let provider = first_provider().await?;
+let house_arrest = HouseArrestClient::connect(&provider).await?;
+
+let mut afc = house_arrest
+    .vend_documents("com.example.app")
+    .await?;
+
+for entry in afc.list_dir("/Documents").await? {
+    println!("{entry}");
+}
+```
+
+Use `vend_container(...)` when you need the app container instead of only
+`Documents`.
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools afc --documents com.example.app list /Documents
+idevice-tools afc --container com.example.app list /
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Permission denied | `vend_documents` only exposes `/Documents`. |
+| Vend request fails | Confirm the bundle ID is installed and supports file sharing for the requested path. |
+| AFC path failure | Treat the returned client like AFC, but within the app-scoped jail. |
+
+## Source
+
+- [`idevice/src/services/house_arrest.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/house_arrest.rs)
+- [`idevice/src/services/afc/mod.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/afc/mod.rs)
+- [`tools/src/afc.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/afc.rs)

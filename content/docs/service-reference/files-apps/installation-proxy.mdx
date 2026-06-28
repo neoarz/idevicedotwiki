@@ -1,0 +1,91 @@
+---
+title: Installation Proxy
+description: Query and manage installed applications.
+---
+
+`InstallationProxyClient` connects to `com.apple.mobile.installation_proxy`.
+It can look up installed apps, browse apps, install packages already staged in
+the AFC jail, upgrade packages, uninstall apps, and check capabilities.
+
+## Use It For
+
+- Listing installed applications.
+- Installing or upgrading an app package staged through AFC.
+- Uninstalling an app by bundle ID.
+- Checking installation capabilities.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "installation_proxy"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown service | `com.apple.mobile.installation_proxy` |
+| RSD service | `com.apple.mobile.installation_proxy.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{IdeviceService, installation_proxy::InstallationProxyClient};
+
+let provider = first_provider().await?;
+let mut instproxy = InstallationProxyClient::connect(&provider).await?;
+
+let apps = instproxy.get_apps(Some("User"), None).await?;
+for bundle_id in apps.keys() {
+    println!("{bundle_id}");
+}
+```
+
+Install a package already uploaded to the AFC jail:
+
+```rust title="src/main.rs"
+instproxy
+    .install_with_callback(
+        "PublicStaging/App.ipa",
+        None,
+        |(percentage, _)| async move {
+            println!("Installing: {percentage}%");
+        },
+        (),
+    )
+    .await?;
+```
+
+For local `.ipa` files, use the high-level helper in `idevice::utils::installation`;
+it handles AFC staging and Installation Proxy.
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools instproxy lookup
+idevice-tools instproxy browse
+idevice-tools instproxy install PublicStaging/App.ipa
+```
+
+High-level local install:
+
+```bash title="Terminal"
+idevice-tools ideviceinstaller install ./App.ipa
+idevice-tools ideviceinstaller upgrade ./App.ipa
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Missing package path | `install` expects a path inside the AFC jail, not a host path. |
+| Installation failed | Check the package signature, provisioning, and device trust state. |
+| Missing `LookupResult` | The response did not match the expected Installation Proxy plist shape. |
+
+## Source
+
+- [`idevice/src/services/installation_proxy.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/installation_proxy.rs)
+- [`idevice/src/utils/installation/mod.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/utils/installation/mod.rs)
+- [`tools/src/instproxy.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/instproxy.rs)
+- [`tools/src/ideviceinstaller.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/ideviceinstaller.rs)

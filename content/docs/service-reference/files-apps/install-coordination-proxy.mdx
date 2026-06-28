@@ -1,0 +1,59 @@
+---
+title: Install Coordination Proxy
+description: Query app install paths and uninstall apps through the RemoteXPC install coordination service.
+---
+
+`InstallcoordinationProxy` is an RSD service client for
+`com.apple.remote.installcoordination_proxy`. In the current code it exposes app
+path lookup and uninstall operations.
+
+## Use It For
+
+- Querying an installed app path by bundle ID.
+- Uninstalling an app by bundle ID through the RemoteXPC path.
+
+## Feature Flags
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["installcoordination_proxy", "core_device_proxy", "rsd", "tunnel_tcp_stack"] }
+```
+
+## Service Name
+
+```txt
+com.apple.remote.installcoordination_proxy
+```
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{RsdService, installcoordination_proxy::InstallcoordinationProxy};
+
+let mut client = InstallcoordinationProxy::connect_rsd(&mut adapter, &mut handshake).await?;
+
+let path = client.query_app_path("com.example.app").await?;
+println!("{path}");
+
+client.uninstall_app("com.example.app").await?;
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools installcoordination_proxy info com.example.app
+idevice-tools installcoordination_proxy uninstall com.example.app
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| RSD service not found | Confirm the service is advertised in the RSD handshake. |
+| Missing `InstallPath` | The query response did not include the expected install path dictionary. |
+| Missing `Success` | The uninstall response did not include a successful boolean result. |
+
+## Source
+
+- [`idevice/src/services/installcoordination_proxy.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/installcoordination_proxy.rs)
+- [`tools/src/installcoordination_proxy.rs`](https://github.com/jkcoxson/idevice/blob/master/tools/src/installcoordination_proxy.rs)
