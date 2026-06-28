@@ -25,7 +25,7 @@ export default function HomePage() {
           <h1 className="text-4xl font-semibold tracking-normal md:text-5xl">idevice</h1>
         </div>
         <p className="mt-5 max-w-2xl text-base leading-7 text-fd-muted-foreground">
-          A pure Rust library and CLI for interacting with iOS services.
+          A pure Rust library for interacting with services exposed by iOS.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">

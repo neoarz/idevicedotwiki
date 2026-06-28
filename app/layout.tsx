@@ -15,35 +15,41 @@ const mono = Geist_Mono({
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://idevice.wiki';
+const socialImage = new URL('idevice-social.png', `${siteUrl}/`).toString();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'idevice docs',
-    template: '%s | idevice docs',
+    default: 'idevice',
+    template: '%s | idevice',
   },
-  description: 'Documentation for the pure Rust library and CLI for interacting with iOS services.',
+  description: 'A pure Rust library for interacting with services exposed by iOS.',
   icons: {
     icon: withBasePath('/idevice-icon.webp'),
     apple: withBasePath('/idevice-icon.webp'),
   },
   openGraph: {
-    title: 'idevice docs',
-    description: 'Documentation for the pure Rust library and CLI for interacting with iOS services.',
+    title: 'idevice',
+    description: 'A pure Rust library for interacting with services exposed by iOS.',
     images: [
       {
-        url: withBasePath('/idevice-icon.webp'),
-        width: 80,
-        height: 80,
+        url: socialImage,
+        width: 180,
+        height: 180,
         alt: 'idevice',
       },
     ],
   },
   twitter: {
     card: 'summary',
-    title: 'idevice docs',
-    description: 'Documentation for the pure Rust library and CLI for interacting with iOS services.',
-    images: [withBasePath('/idevice-icon.webp')],
+    title: 'idevice',
+    description: 'A pure Rust library for interacting with services exposed by iOS.',
+    images: [
+      {
+        url: socialImage,
+        alt: 'idevice',
+      },
+    ],
   },
 };
 
