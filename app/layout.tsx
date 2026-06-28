@@ -1,6 +1,6 @@
-import { RootProvider } from 'fumadocs-ui/provider/next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import type { Metadata } from 'next';
+import { Provider } from '@/components/provider';
 import './global.css';
 
 const geist = Geist({
@@ -50,7 +50,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={`${geist.variable} ${mono.variable}`} suppressHydrationWarning>
       <body className="min-h-screen bg-background font-sans antialiased">
-        <RootProvider>{children}</RootProvider>
+        <Provider>{children}</Provider>
       </body>
     </html>
   );
