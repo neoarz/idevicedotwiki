@@ -1,0 +1,61 @@
+---
+title: Notification Proxy
+description: Post and observe Darwin notification names on the device.
+---
+
+Notification Proxy exposes `com.apple.mobile.notification_proxy` through `NotificationProxyClient`. It can post notification identifiers and receive observed notifications.
+
+## Use It For
+
+- Observe a notification identifier.
+- Post a notification identifier.
+- Convert notifications into an async stream.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "notification_proxy"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown | `com.apple.mobile.notification_proxy` |
+| RSD | `com.apple.mobile.notification_proxy.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    notification_proxy::NotificationProxyClient,
+};
+
+let provider = first_provider().await?;
+let mut client = NotificationProxyClient::connect(&provider).await?;
+client.observe_notification("com.apple.mobile.lockdown.host_attached").await?;
+let notification = client.receive_notification().await?;
+println!("{notification:#?}");
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools notification_proxy observe com.apple.mobile.lockdown.host_attached
+idevice-tools notification_proxy post com.apple.mobile.lockdown.host_attached
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Service not found | The device/iOS version does not advertise this service on the selected transport. |
+| Connection failed | Check pairing, trust state, and whether the selected provider can reach the device. |
+| Permission error | The service requires a device state, entitlement, or developer setting that is not active. |
+
+## Source
+
+- [`idevice/src/services/notification_proxy.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/notification_proxy.rs)
+- [`tools/src/notification_proxy_client.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/notification_proxy_client.rs)

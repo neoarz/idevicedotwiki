@@ -1,0 +1,60 @@
+---
+title: Syslog Relay
+description: Stream syslog lines from the device.
+---
+
+Syslog Relay exposes `com.apple.syslog_relay` through `SyslogRelayClient`. The client reads log lines from the relay stream.
+
+## Use It For
+
+- Read live syslog output.
+- Pipe device logs to a terminal or file.
+- Debug service behavior while running examples.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "syslog_relay"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown | `com.apple.syslog_relay` |
+| RSD | `com.apple.syslog_relay.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    syslog_relay::SyslogRelayClient,
+};
+
+let provider = first_provider().await?;
+let mut client = SyslogRelayClient::connect(&provider).await?;
+loop {
+    println!("{}", client.next().await?);
+}
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools syslog_relay
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Service not found | The device/iOS version does not advertise this service on the selected transport. |
+| Connection failed | Check pairing, trust state, and whether the selected provider can reach the device. |
+| Permission error | The service requires a device state, entitlement, or developer setting that is not active. |
+
+## Source
+
+- [`idevice/src/services/syslog_relay.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/syslog_relay.rs)
+- [`tools/src/syslog_relay.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/syslog_relay.rs)

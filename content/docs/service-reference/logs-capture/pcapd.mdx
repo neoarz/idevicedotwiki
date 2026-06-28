@@ -1,0 +1,60 @@
+---
+title: PCAPD
+description: Capture device network packets and write PCAP files.
+---
+
+PCAPD exposes `com.apple.pcapd` through `PcapdClient`. The crate also includes `PcapFileWriter` for writing packets to a PCAP stream.
+
+## Use It For
+
+- Capture packets from the device.
+- Write packet captures to a `.pcap` file.
+- Normalize packet data before writing.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "pcapd"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown | `com.apple.pcapd` |
+| RSD | `com.apple.pcapd.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    pcapd::{PcapFileWriter, PcapdClient},
+};
+
+let provider = first_provider().await?;
+let mut client = PcapdClient::connect(&provider).await?;
+let packet = client.next_packet().await?;
+println!("{} bytes", packet.data.len());
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools pcapd capture.pcap
+idevice-tools pcapd -
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Service not found | The device/iOS version does not advertise this service on the selected transport. |
+| Connection failed | Check pairing, trust state, and whether the selected provider can reach the device. |
+| Permission error | The service requires a device state, entitlement, or developer setting that is not active. |
+
+## Source
+
+- [`idevice/src/services/pcapd.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/pcapd.rs)
+- [`tools/src/pcapd.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/pcapd.rs)

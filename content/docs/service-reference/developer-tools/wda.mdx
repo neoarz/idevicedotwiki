@@ -1,0 +1,59 @@
+---
+title: WDA
+description: Control WebDriverAgent sessions and bridge WDA endpoints.
+---
+
+WDA support is exposed through `WdaClient` and `WdaBridge`. The module handles WebDriverAgent status, sessions, element lookup, and bridged endpoint URLs.
+
+## Use It For
+
+- Wait for WebDriverAgent readiness.
+- Start a WDA session.
+- Find elements through WebDriverAgent.
+- Bridge WDA and MJPEG endpoints.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "wda"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| WDA HTTP | `WebDriverAgent endpoint` |
+| Bridge | `WdaBridge local endpoints` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use std::time::Duration;
+
+use idevice::wda::WdaClient;
+
+let provider = first_provider().await?;
+let mut wda = WdaClient::new(&provider);
+wda.wait_until_ready(Duration::from_secs(30)).await?;
+let session_id = wda.start_session(None).await?;
+println!("{session_id}");
+```
+
+## CLI Equivalent
+
+No standalone `wda` subcommand is registered in `tools/src/main.rs`; WDA is used by XCTest/WDA flows.
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| WDA not responding | Start the WDA runner before creating the client or waiting for readiness. |
+| Device port connection failed | Check the provider and device-side WDA ports. |
+| Missing session id | Call `start_session` before APIs that require an active WebDriver session. |
+
+## Source
+
+- [`idevice/src/services/wda.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/wda.rs)
+- [`idevice/src/services/wda_bridge.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/wda_bridge.rs)
+- [`tools/src/xctest.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/xctest.rs)

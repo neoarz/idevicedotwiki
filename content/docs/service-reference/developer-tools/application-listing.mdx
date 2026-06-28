@@ -1,0 +1,61 @@
+---
+title: Application Listing
+description: Read installed applications through DVT.
+---
+
+Application Listing is a DVT client built on `RemoteServerClient`. It opens the `com.apple.instruments.server.services.device.applictionListing` channel.
+
+## Use It For
+
+- Connect through the DVT remote server.
+- Call the service-specific DTX methods.
+- Use the matching `idevice-tools` command when one exists.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "application_listing"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| DVT Lockdown | `com.apple.instruments.remoteserver` |
+| DVT Lockdown fallback | `com.apple.instruments.remoteserver.DVTSecureSocketProxy` |
+| DVT RSD | `com.apple.instruments.dtservicehub` |
+| DVT channel | `com.apple.instruments.server.services.device.applictionListing` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::dvt::{
+    RemoteServerClient,
+    application_listing::ApplicationListingClient,
+};
+
+let mut remote = RemoteServerClient::connect(&provider).await?;
+let mut client = ApplicationListingClient::new(&mut remote).await?;
+let apps = client.installed_applications().await?;
+println!("{apps:#?}");
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools application_listing
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Channel creation failed | The DVT remote server did not accept the channel identifier. |
+| Protocol decode error | Check that the client and device service are using the expected DTX payload shape. |
+| Developer service unavailable | Start from the iOS 17+ tunnel path or a device state that exposes developer services. |
+
+## Source
+
+- [`idevice/src/services/dvt/application_listing.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/dvt/application_listing.rs)
+- [`tools/src/application_listing.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/application_listing.rs)

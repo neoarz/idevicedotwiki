@@ -1,0 +1,60 @@
+---
+title: Screen Capture
+description: Capture screenshots through CoreDevice Screen Capture Service.
+---
+
+Screen Capture is a CoreDevice service reached through RSD and RemoteXPC. The client connects to `com.apple.coredevice.screencaptureservice`.
+
+## Use It For
+
+- Connect through the iOS 17+ CoreDevice tunnel.
+- Call the typed CoreDevice client methods.
+- Use the matching tool command when one is registered.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "rsd", "core_device"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| RSD | `com.apple.coredevice.screencaptureservice` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    RsdService,
+    core_device::{ImageFormat, ScreenCaptureServiceClient},
+};
+
+let mut client: ScreenCaptureServiceClient<_> = rsd_handshake
+    .connect(&mut rsd_provider)
+    .await?;
+let image = client.take_screenshot(None, ImageFormat::Png).await?;
+tokio::fs::write("screenshot.png", image).await?;
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools screencaptureservice screenshot.png
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| RSD service not found | The connected device did not advertise the CoreDevice service name. |
+| RemoteXPC error | Check the CoreDevice action and payload shape used by the client. |
+| Tunnel unavailable | Create the iOS 17+ tunnel before connecting to CoreDevice services over USB. |
+
+## Source
+
+- [`idevice/src/services/core_device/screencaptureservices.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/core_device/screencaptureservices.rs)
+- [`tools/src/screencaptureservice.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/screencaptureservice.rs)
+- [`tools/src/screencapture.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/screencapture.rs)

@@ -1,0 +1,56 @@
+---
+title: MobileActivation
+description: Read and change the device activation state.
+---
+
+MobileActivation talks to `com.apple.mobileactivationd` through `MobileActivationdClient`. The client exposes activation state, activated checks, and deactivate requests.
+
+## Use It For
+
+- Read the activation state.
+- Check whether a device is activated.
+- Request deactivation.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "mobileactivationd"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown | `com.apple.mobileactivationd` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::mobileactivationd::MobileActivationdClient;
+
+let provider = first_provider().await?;
+let client = MobileActivationdClient::new(&provider);
+let state = client.state().await?;
+println!("{state:#?}");
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools activation state
+idevice-tools activation deactivate
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Service not found | The device/iOS version does not advertise this service on the selected transport. |
+| Connection failed | Check pairing, trust state, and whether the selected provider can reach the device. |
+| Permission error | The service requires a device state, entitlement, or developer setting that is not active. |
+
+## Source
+
+- [`idevice/src/services/mobileactivationd.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/mobileactivationd.rs)
+- [`tools/src/activation.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/activation.rs)

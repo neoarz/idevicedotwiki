@@ -1,0 +1,62 @@
+---
+title: Condition Inducer
+description: List and apply simulated device conditions.
+---
+
+Condition Inducer is a DVT client built on `RemoteServerClient`. It opens the `com.apple.instruments.server.services.ConditionInducer` channel.
+
+## Use It For
+
+- Connect through the DVT remote server.
+- Call the service-specific DTX methods.
+- Use the matching `idevice-tools` command when one exists.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "condition_inducer"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| DVT Lockdown | `com.apple.instruments.remoteserver` |
+| DVT Lockdown fallback | `com.apple.instruments.remoteserver.DVTSecureSocketProxy` |
+| DVT RSD | `com.apple.instruments.dtservicehub` |
+| DVT channel | `com.apple.instruments.server.services.ConditionInducer` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::dvt::{
+    RemoteServerClient,
+    condition_inducer::ConditionInducerClient,
+};
+
+let mut remote = RemoteServerClient::connect(&provider).await?;
+let mut client = ConditionInducerClient::new(&mut remote).await?;
+let groups = client.available_conditions().await?;
+println!("{groups:#?}");
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools condition_inducer list
+idevice-tools condition_inducer enable <profile>
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Channel creation failed | The DVT remote server did not accept the channel identifier. |
+| Protocol decode error | Check that the client and device service are using the expected DTX payload shape. |
+| Developer service unavailable | Start from the iOS 17+ tunnel path or a device state that exposes developer services. |
+
+## Source
+
+- [`idevice/src/services/dvt/condition_inducer.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/dvt/condition_inducer.rs)
+- [`tools/src/condition_inducer.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/condition_inducer.rs)

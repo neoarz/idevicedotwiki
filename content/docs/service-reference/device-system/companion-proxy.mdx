@@ -1,0 +1,62 @@
+---
+title: Companion Proxy
+description: Query and listen for companion devices such as paired watches.
+---
+
+Companion Proxy exposes `com.apple.companion_proxy` through `CompanionProxy`. It reads companion registry values and starts or stops forwarded companion service ports.
+
+## Use It For
+
+- List companion devices.
+- Listen for companion attach and detach events.
+- Read values from a companion device.
+- Forward companion service ports.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "companion_proxy"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown | `com.apple.companion_proxy` |
+| RSD | `com.apple.companion_proxy.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    companion_proxy::CompanionProxy,
+};
+
+let provider = first_provider().await?;
+let mut client = CompanionProxy::connect(&provider).await?;
+let registry = client.get_device_registry().await?;
+println!("{registry:#?}");
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools companion_proxy list
+idevice-tools companion_proxy listen
+idevice-tools companion_proxy get <watch-udid> <key>
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Service not found | The device/iOS version does not advertise this service on the selected transport. |
+| Connection failed | Check pairing, trust state, and whether the selected provider can reach the device. |
+| Permission error | The service requires a device state, entitlement, or developer setting that is not active. |
+
+## Source
+
+- [`idevice/src/services/companion_proxy.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/companion_proxy.rs)
+- [`tools/src/companion_proxy.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/companion_proxy.rs)

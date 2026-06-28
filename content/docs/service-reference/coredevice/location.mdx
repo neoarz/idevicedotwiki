@@ -1,0 +1,56 @@
+---
+title: Location
+description: List available CoreDevice location simulation scenarios.
+---
+
+Location is a CoreDevice service reached through RSD and RemoteXPC. The client connects to `com.apple.coredevice.locationservice`.
+
+## Use It For
+
+- Connect through the iOS 17+ CoreDevice tunnel.
+- Call the typed CoreDevice client methods.
+- Use the matching tool command when one is registered.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "rsd", "core_device"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| RSD | `com.apple.coredevice.locationservice` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{RsdService, core_device::LocationServiceClient};
+
+let mut client: LocationServiceClient<_> = rsd_handshake
+    .connect(&mut rsd_provider)
+    .await?;
+let scenarios = client.available_location_scenarios().await?;
+println!("{scenarios:#?}");
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools location scenarios
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| RSD service not found | The connected device did not advertise the CoreDevice service name. |
+| RemoteXPC error | Check the CoreDevice action and payload shape used by the client. |
+| Tunnel unavailable | Create the iOS 17+ tunnel before connecting to CoreDevice services over USB. |
+
+## Source
+
+- [`idevice/src/services/core_device/location_service.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/core_device/location_service.rs)
+- [`tools/src/coredevice_location.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/coredevice_location.rs)

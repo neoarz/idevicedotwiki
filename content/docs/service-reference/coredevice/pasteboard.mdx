@@ -1,0 +1,58 @@
+---
+title: Pasteboard
+description: Read, write, resolve, and observe CoreDevice pasteboard data.
+---
+
+Pasteboard is a CoreDevice service reached through RSD and RemoteXPC. The client connects to `com.apple.coredevice.pasteboardservice`.
+
+## Use It For
+
+- Connect through the iOS 17+ CoreDevice tunnel.
+- Call the typed CoreDevice client methods.
+- Use the matching tool command when one is registered.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "rsd", "core_device"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| RSD | `com.apple.coredevice.pasteboardservice` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{RsdService, core_device::PasteboardServiceClient};
+
+let mut client: PasteboardServiceClient<_> = rsd_handshake
+    .connect(&mut rsd_provider)
+    .await?;
+client.set_text("hello", "general").await?;
+let snapshot = client.get("general").await?;
+println!("{snapshot:#?}");
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools pasteboard paste
+idevice-tools pasteboard copy "hello"
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| RSD service not found | The connected device did not advertise the CoreDevice service name. |
+| RemoteXPC error | Check the CoreDevice action and payload shape used by the client. |
+| Tunnel unavailable | Create the iOS 17+ tunnel before connecting to CoreDevice services over USB. |
+
+## Source
+
+- [`idevice/src/services/core_device/pasteboard_service.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/core_device/pasteboard_service.rs)
+- [`tools/src/coredevice_pasteboard.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/coredevice_pasteboard.rs)

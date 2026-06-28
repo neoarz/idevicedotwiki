@@ -14,7 +14,7 @@ Current areas covered in `idevice` include:
 | Display stream | Receives screen video data used by streaming and HID workflows. |
 | Screen capture | Takes screenshots through `screencaptureservice`. |
 | Pasteboard | Reads, writes, lists, and watches device clipboard contents. |
-| Orientation | Reads and changes device orientation through CoreDevice. |
+| Orientation | Rotates device orientation through CoreDevice and returns the resulting state. |
 | Location service | Lists built-in location simulation scenarios. |
 | Diagnostics service | Retrieves sysdiagnose data over CoreDevice. |
 
@@ -33,10 +33,10 @@ idevice-tools diagnosticsservice
 
 Related source modules:
 
-- [`services/core_device/app_service.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/app_service.rs)
-- [`services/core_device/hid.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/hid.rs)
-- [`services/core_device/pasteboard_service.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/pasteboard_service.rs)
-- [`services/core_device/orientation_service.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/orientation_service.rs)
-- [`services/core_device/location_service.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/location_service.rs)
-- [`services/core_device/screencaptureservices.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/screencaptureservices.rs)
-- [`services/core_device/diagnosticsservice.rs`](https://github.com/jkcoxson/idevice/blob/master/idevice/src/services/core_device/diagnosticsservice.rs)
+- [`services/core_device/app_service.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/core_device/app_service.rs)
+- [`services/core_device/hid.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/core_device/hid.rs)
+- [`services/core_device/pasteboard_service.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/core_device/pasteboard_service.rs)
+- [`services/core_device/orientation_service.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/core_device/orientation_service.rs)
+- [`services/core_device/location_service.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/core_device/location_service.rs)
+- [`services/core_device/screencaptureservices.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/core_device/screencaptureservices.rs)
+- [`services/core_device/diagnosticsservice.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/core_device/diagnosticsservice.rs)

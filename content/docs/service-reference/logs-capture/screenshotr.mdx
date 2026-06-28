@@ -1,0 +1,59 @@
+---
+title: Screenshotr
+description: Take screenshots through the classic screenshot service.
+---
+
+Screenshotr exposes `com.apple.mobile.screenshotr` through `ScreenshotService`. It is separate from CoreDevice Screen Capture.
+
+## Use It For
+
+- Capture a screenshot through Lockdown-started screenshotr.
+- Receive device link messages from the service.
+- Save screenshot data from the bundled tool.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "screenshotr"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown | `com.apple.mobile.screenshotr` |
+| RSD | `com.apple.screenshotr.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    screenshotr::ScreenshotService,
+};
+
+let provider = first_provider().await?;
+let mut client = ScreenshotService::connect(&provider).await?;
+let screenshot = client.take_screenshot().await?;
+tokio::fs::write("screenshot.tiff", screenshot).await?;
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools screenshot screenshot.tiff
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Service not found | The device/iOS version does not advertise this service on the selected transport. |
+| Connection failed | Check pairing, trust state, and whether the selected provider can reach the device. |
+| Permission error | The service requires a device state, entitlement, or developer setting that is not active. |
+
+## Source
+
+- [`idevice/src/services/screenshotr.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/screenshotr.rs)
+- [`tools/src/screenshot.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/screenshot.rs)

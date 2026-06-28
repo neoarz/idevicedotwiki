@@ -1,0 +1,61 @@
+---
+title: OS Trace Relay
+description: Read unified logging and archive trace output.
+---
+
+OS Trace Relay exposes `com.apple.os_trace_relay` through `OsTraceRelayClient`. It can start a trace, read PID lists, stream log entries, and write trace archives.
+
+## Use It For
+
+- Stream OS trace logs.
+- Read process identifiers known to the trace service.
+- Create a trace archive.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "syslog_relay"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown | `com.apple.os_trace_relay` |
+| RSD | `com.apple.os_trace_relay.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    os_trace_relay::OsTraceRelayClient,
+};
+
+let provider = first_provider().await?;
+let mut client = OsTraceRelayClient::connect(&provider).await?;
+let mut receiver = client.start_trace().await?;
+while let Some(log) = receiver.next().await? {
+    println!("{log:?}");
+}
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools os_trace_relay
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Service not found | The device/iOS version does not advertise this service on the selected transport. |
+| Connection failed | Check pairing, trust state, and whether the selected provider can reach the device. |
+| Permission error | The service requires a device state, entitlement, or developer setting that is not active. |
+
+## Source
+
+- [`idevice/src/services/os_trace_relay.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/os_trace_relay.rs)
+- [`tools/src/os_trace_relay.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/os_trace_relay.rs)

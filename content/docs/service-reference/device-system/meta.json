@@ -1,4 +1,13 @@
 {
   "title": "Device Info & System",
-  "pages": []
+  "pages": [
+    "diagnostics-relay",
+    "springboard-services",
+    "mobileactivation",
+    "preboard",
+    "heartbeat",
+    "companion-proxy",
+    "notification-proxy",
+    "amfi"
+  ]
 }

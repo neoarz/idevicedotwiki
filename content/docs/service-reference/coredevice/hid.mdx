@@ -1,0 +1,59 @@
+---
+title: HID
+description: Send remote HID button, keyboard, digitizer, scroll, and touch reports.
+---
+
+HID is a CoreDevice service reached through RSD and RemoteXPC. The client connects to `com.apple.coredevice.hid.indigo`.
+
+## Use It For
+
+- Connect through the iOS 17+ CoreDevice tunnel.
+- Call the typed CoreDevice client methods.
+- Use the matching tool command when one is registered.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "display_stream"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| RSD | `com.apple.coredevice.hid.indigo` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    RsdService,
+    core_device::{ButtonState, IndigoHidClient},
+};
+
+let mut client: IndigoHidClient<_> = rsd_handshake
+    .connect(&mut rsd_provider)
+    .await?;
+client.send_button(0x0c, 0xcd, ButtonState::Down).await?;
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools hid tap 100 200
+idevice-tools hid button home
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| RSD service not found | The connected device did not advertise the CoreDevice service name. |
+| RemoteXPC error | Check the CoreDevice action and payload shape used by the client. |
+| Tunnel unavailable | Create the iOS 17+ tunnel before connecting to CoreDevice services over USB. |
+
+## Source
+
+- [`idevice/src/services/core_device/hid.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/core_device/hid.rs)
+- [`tools/src/hid.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/hid.rs)

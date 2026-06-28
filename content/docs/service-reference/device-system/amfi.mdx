@@ -1,0 +1,63 @@
+---
+title: AMFI
+description: Control developer mode prompts and app signer trust through AMFI lockdown service.
+---
+
+AMFI exposes `com.apple.amfi.lockdown` through `AmfiClient`. The client covers developer mode UI, developer mode state, and app signer trust.
+
+## Use It For
+
+- Reveal the developer mode option in Settings.
+- Enable or accept developer mode.
+- Read developer mode status.
+- Trust an app signer UUID.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "amfi"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown | `com.apple.amfi.lockdown` |
+| RSD | `com.apple.amfi.lockdown.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    amfi::AmfiClient,
+};
+
+let provider = first_provider().await?;
+let mut client = AmfiClient::connect(&provider).await?;
+let status = client.get_developer_mode_status().await?;
+println!("{status:#?}");
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools amfi status
+idevice-tools amfi reveal
+idevice-tools amfi enable
+idevice-tools amfi trust <uuid>
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Service not found | The device/iOS version does not advertise this service on the selected transport. |
+| Connection failed | Check pairing, trust state, and whether the selected provider can reach the device. |
+| Permission error | The service requires a device state, entitlement, or developer setting that is not active. |
+
+## Source
+
+- [`idevice/src/services/amfi.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/amfi.rs)
+- [`tools/src/amfi.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/amfi.rs)

@@ -1,0 +1,59 @@
+---
+title: DVT Remote Server
+description: Open DVT channels over Instruments Remote Server or CoreDevice dtservicehub.
+---
+
+DVT Remote Server is the transport layer used by the DVT clients. `RemoteServerClient` opens channels and sends DTX method calls.
+
+## Use It For
+
+- Open the root DVT connection.
+- Create named DVT channels.
+- Call DTX methods on a channel.
+- Back higher-level DVT clients such as process control and sysmontap.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "dvt"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown | `com.apple.instruments.remoteserver` |
+| Lockdown fallback | `com.apple.instruments.remoteserver.DVTSecureSocketProxy` |
+| RSD | `com.apple.instruments.dtservicehub` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::dvt::RemoteServerClient;
+
+let provider = first_provider().await?;
+let mut remote = RemoteServerClient::connect(&provider).await?;
+let mut channel = remote
+    .make_channel("com.apple.instruments.server.services.deviceinfo")
+    .await?;
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+DVT-specific commands such as `process_control`, `sysmontap`, `graphics`, and `xctest` connect through this service.
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Channel creation failed | The DVT remote server did not accept the channel identifier. |
+| Protocol decode error | Check that the client and device service are using the expected DTX payload shape. |
+| Developer service unavailable | Start from the iOS 17+ tunnel path or a device state that exposes developer services. |
+
+## Source
+
+- [`idevice/src/services/dvt/mod.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/dvt/mod.rs)
+- [`idevice/src/services/dvt/remote_server.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/dvt/remote_server.rs)

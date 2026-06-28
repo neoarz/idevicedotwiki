@@ -1,0 +1,60 @@
+---
+title: Bluetooth Packet Logger
+description: Capture Bluetooth packet logger frames.
+---
+
+Bluetooth Packet Logger exposes `com.apple.bluetooth.BTPacketLogger` through `BtPacketLoggerClient`. It reads Bluetooth frames and can be used as a stream.
+
+## Use It For
+
+- Read Bluetooth packet logger frames.
+- Convert frames into a stream.
+- Write captured traffic from the bundled tool.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "bt_packet_logger"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown | `com.apple.bluetooth.BTPacketLogger` |
+| RSD | `com.apple.bluetooth.BTPacketLogger.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    bt_packet_logger::BtPacketLoggerClient,
+};
+
+let provider = first_provider().await?;
+let mut client = BtPacketLoggerClient::connect(&provider).await?;
+let frame = client.next_packet().await?;
+println!("{:?}", frame.kind);
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools bt_packet_logger capture.pcap
+idevice-tools bt_packet_logger -
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Service not found | The device/iOS version does not advertise this service on the selected transport. |
+| Connection failed | Check pairing, trust state, and whether the selected provider can reach the device. |
+| Permission error | The service requires a device state, entitlement, or developer setting that is not active. |
+
+## Source
+
+- [`idevice/src/services/bt_packet_logger.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/bt_packet_logger.rs)
+- [`tools/src/bt_packet_logger.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/bt_packet_logger.rs)

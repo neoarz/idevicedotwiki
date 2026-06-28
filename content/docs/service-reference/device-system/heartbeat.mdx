@@ -1,0 +1,60 @@
+---
+title: Heartbeat
+description: Exchange Marco/Polo heartbeat messages with the device.
+---
+
+Heartbeat exposes the `com.apple.mobile.heartbeat` service through `HeartbeatClient`. The client reads Marco messages and replies with Polo messages.
+
+## Use It For
+
+- Check that a service connection stays alive.
+- Exercise the heartbeat service from tools.
+- Handle heartbeat traffic in tests or diagnostics.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "heartbeat"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown | `com.apple.mobile.heartbeat` |
+| RSD | `com.apple.mobile.heartbeat.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    heartbeat::HeartbeatClient,
+};
+
+let provider = first_provider().await?;
+let mut client = HeartbeatClient::connect(&provider).await?;
+let marco = client.get_marco().await?;
+println!("{marco:#?}");
+client.send_polo().await?;
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools heartbeat_client
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Service not found | The device/iOS version does not advertise this service on the selected transport. |
+| Connection failed | Check pairing, trust state, and whether the selected provider can reach the device. |
+| Permission error | The service requires a device state, entitlement, or developer setting that is not active. |
+
+## Source
+
+- [`idevice/src/services/heartbeat.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/heartbeat.rs)
+- [`tools/src/heartbeat_client.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/heartbeat_client.rs)

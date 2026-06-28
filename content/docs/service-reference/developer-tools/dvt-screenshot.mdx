@@ -1,0 +1,58 @@
+---
+title: DVT Screenshot
+description: Take screenshots through the DVT screenshot channel.
+---
+
+DVT Screenshot is a DVT client built on `RemoteServerClient`. It opens the `com.apple.instruments.server.services.screenshot` channel.
+
+## Use It For
+
+- Connect through the DVT remote server.
+- Call the service-specific DTX methods.
+- Use the matching `idevice-tools` command when one exists.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "dvt"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| DVT Lockdown | `com.apple.instruments.remoteserver` |
+| DVT Lockdown fallback | `com.apple.instruments.remoteserver.DVTSecureSocketProxy` |
+| DVT RSD | `com.apple.instruments.dtservicehub` |
+| DVT channel | `com.apple.instruments.server.services.screenshot` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::dvt::{
+    RemoteServerClient,
+    screenshot::ScreenshotClient,
+};
+
+let mut remote = RemoteServerClient::connect(&provider).await?;
+let mut client = ScreenshotClient::new(&mut remote).await?;
+let data = client.take_screenshot().await?;
+tokio::fs::write("screenshot.png", data).await?;
+```
+
+## CLI Equivalent
+
+No dedicated top-level DVT screenshot command is registered; use `screenshot` for classic screenshotr or `screencaptureservice` for CoreDevice.
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Channel creation failed | The DVT remote server did not accept the channel identifier. |
+| Protocol decode error | Check that the client and device service are using the expected DTX payload shape. |
+| Developer service unavailable | Start from the iOS 17+ tunnel path or a device state that exposes developer services. |
+
+## Source
+
+- [`idevice/src/services/dvt/screenshot.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/dvt/screenshot.rs)

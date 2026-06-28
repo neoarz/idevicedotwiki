@@ -3,6 +3,11 @@
   "pages": [
     "index",
     "connection",
-    "files-apps"
+    "files-apps",
+    "device-system",
+    "logs-capture",
+    "developer-tools",
+    "coredevice",
+    "backup-restore"
   ]
 }

@@ -1,0 +1,59 @@
+---
+title: Preboard
+description: Create and commit preboard stashbags.
+---
+
+Preboard uses `PreboardServiceClient` for stashbag operations on `com.apple.preboardservice_v2`.
+
+## Use It For
+
+- Create a stashbag.
+- Commit a stashbag.
+- Clear the system token exposed by the service.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "preboard_service"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown | `com.apple.preboardservice_v2` |
+| RSD | `com.apple.preboardservice_v2.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    preboard_service::PreboardServiceClient,
+};
+
+let provider = first_provider().await?;
+let mut client = PreboardServiceClient::connect(&provider).await?;
+client.create_stashbag(&[1, 2, 3, 4]).await?;
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools preboard create
+idevice-tools preboard commit
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Service not found | The device/iOS version does not advertise this service on the selected transport. |
+| Connection failed | Check pairing, trust state, and whether the selected provider can reach the device. |
+| Permission error | The service requires a device state, entitlement, or developer setting that is not active. |
+
+## Source
+
+- [`idevice/src/services/preboard_service.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/preboard_service.rs)
+- [`tools/src/preboard.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/preboard.rs)

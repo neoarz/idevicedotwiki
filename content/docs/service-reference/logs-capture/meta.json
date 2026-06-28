@@ -1,4 +1,12 @@
 {
   "title": "Logs & Capture",
-  "pages": []
+  "pages": [
+    "syslog-relay",
+    "os-trace-relay",
+    "crash-reports",
+    "pcapd",
+    "bluetooth-packet-logger",
+    "debug-proxy",
+    "screenshotr"
+  ]
 }

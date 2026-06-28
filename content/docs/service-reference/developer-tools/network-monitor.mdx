@@ -1,0 +1,62 @@
+---
+title: Network Monitor
+description: Stream networking detection and update events.
+---
+
+Network Monitor is a DVT client built on `RemoteServerClient`. It opens the `com.apple.instruments.server.services.networking` channel.
+
+## Use It For
+
+- Connect through the DVT remote server.
+- Call the service-specific DTX methods.
+- Use the matching `idevice-tools` command when one exists.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "network_monitor"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| DVT Lockdown | `com.apple.instruments.remoteserver` |
+| DVT Lockdown fallback | `com.apple.instruments.remoteserver.DVTSecureSocketProxy` |
+| DVT RSD | `com.apple.instruments.dtservicehub` |
+| DVT channel | `com.apple.instruments.server.services.networking` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::dvt::{
+    RemoteServerClient,
+    network_monitor::NetworkMonitorClient,
+};
+
+let mut remote = RemoteServerClient::connect(&provider).await?;
+let mut client = NetworkMonitorClient::new(&mut remote).await?;
+client.start_monitoring().await?;
+let event = client.next_event().await?;
+println!("{event:#?}");
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools network_monitor
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Channel creation failed | The DVT remote server did not accept the channel identifier. |
+| Protocol decode error | Check that the client and device service are using the expected DTX payload shape. |
+| Developer service unavailable | Start from the iOS 17+ tunnel path or a device state that exposes developer services. |
+
+## Source
+
+- [`idevice/src/services/dvt/network_monitor.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/dvt/network_monitor.rs)
+- [`tools/src/network_monitor.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/network_monitor.rs)

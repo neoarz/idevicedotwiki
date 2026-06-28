@@ -1,0 +1,58 @@
+---
+title: Debug Proxy
+description: Talk to the remote debug proxy service.
+---
+
+Debug Proxy exposes the RSD service `com.apple.internal.dt.remote.debugproxy` through `DebugProxyClient`. The client sends debugserver commands and reads responses.
+
+## Use It For
+
+- Send debugserver commands.
+- Read raw debug proxy responses.
+- Drive a debug proxy shell from the bundled tool.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "rsd", "debug_proxy"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| RSD | `com.apple.internal.dt.remote.debugproxy` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    RsdService,
+    debug_proxy::DebugProxyClient,
+};
+
+let mut client = rsd_handshake
+    .connect::<DebugProxyClient<_>>(&mut rsd_provider)
+    .await?;
+client.send_noack().await?;
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools debug_proxy
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Service not found | The device/iOS version does not advertise this service on the selected transport. |
+| Connection failed | Check pairing, trust state, and whether the selected provider can reach the device. |
+| Permission error | The service requires a device state, entitlement, or developer setting that is not active. |
+
+## Source
+
+- [`idevice/src/services/debug_proxy.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/debug_proxy.rs)
+- [`tools/src/debug_proxy.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/debug_proxy.rs)

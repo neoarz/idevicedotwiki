@@ -1,4 +1,14 @@
 {
   "title": "CoreDevice",
-  "pages": []
+  "pages": [
+    "app-service",
+    "hid",
+    "screen-capture",
+    "display-stream",
+    "pasteboard",
+    "orientation",
+    "location",
+    "diagnostics-service",
+    "open-stdio-socket"
+  ]
 }

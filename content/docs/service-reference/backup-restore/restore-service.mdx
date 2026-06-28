@@ -1,0 +1,63 @@
+---
+title: Restore Service
+description: Call restore service actions over RSD.
+---
+
+Restore Service exposes `com.apple.RestoreRemoteServices.restoreserviced` through `RestoreServiceClient`. It handles recovery entry, reboot, preflight info, nonces, app parameters, and restore language calls.
+
+## Use It For
+
+- Enter recovery through restore services.
+- Reboot through restore services.
+- Read restore preflight information.
+- Read restore nonces and app parameters.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "rsd", "restore_service"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| RSD | `com.apple.RestoreRemoteServices.restoreserviced` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    RsdService,
+    restore_service::RestoreServiceClient,
+};
+
+let mut client = rsd_handshake
+    .connect::<RestoreServiceClient<_>>(&mut rsd_provider)
+    .await?;
+let nonces = client.get_nonces().await?;
+println!("{nonces:#?}");
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools restore_service recovery
+idevice-tools restore_service reboot
+idevice-tools restore_service nonces
+idevice-tools restore_service preflight
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Service not found | The device/iOS version does not advertise this service on the selected transport. |
+| Connection failed | Check pairing, trust state, and whether the selected provider can reach the device. |
+| Permission error | The service requires a device state, entitlement, or developer setting that is not active. |
+
+## Source
+
+- [`idevice/src/services/restore_service.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/restore_service.rs)
+- [`tools/src/restore_service.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/restore_service.rs)

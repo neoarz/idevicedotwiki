@@ -1,0 +1,62 @@
+---
+title: SpringBoard Services
+description: Read SpringBoard icon, wallpaper, orientation, and home screen metadata.
+---
+
+SpringBoard Services exposes SpringBoard state through `SpringBoardServicesClient`. It is the classic service used for icon data, icon layout, wallpaper previews, and interface orientation.
+
+## Use It For
+
+- Read app icon PNG data.
+- Read or set icon state.
+- Read wallpaper preview images.
+- Read interface orientation and home screen metrics.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "springboardservices"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| Lockdown | `com.apple.springboardservices` |
+| RSD | `com.apple.springboardservices.shim.remote` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::{
+    IdeviceService,
+    springboardservices::SpringBoardServicesClient,
+};
+
+let provider = first_provider().await?;
+let mut client = SpringBoardServicesClient::connect(&provider).await?;
+let orientation = client.get_interface_orientation().await?;
+println!("{orientation:?}");
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools springboard get_interface_orientation
+idevice-tools springboard get_icon com.apple.Maps --save icon.png
+idevice-tools springboard get_wallpaper_preview homescreen --save preview.png
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Service not found | The device/iOS version does not advertise this service on the selected transport. |
+| Connection failed | Check pairing, trust state, and whether the selected provider can reach the device. |
+| Permission error | The service requires a device state, entitlement, or developer setting that is not active. |
+
+## Source
+
+- [`idevice/src/services/springboardservices.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/springboardservices.rs)
+- [`tools/src/springboardservices.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/springboardservices.rs)

@@ -1,0 +1,63 @@
+---
+title: Energy Monitor
+description: Sample Xcode energy gauge data.
+---
+
+Energy Monitor is a DVT client built on `RemoteServerClient`. It opens the `com.apple.xcode.debug-gauge-data-providers.Energy` channel.
+
+## Use It For
+
+- Connect through the DVT remote server.
+- Call the service-specific DTX methods.
+- Use the matching `idevice-tools` command when one exists.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "energy_monitor"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| DVT Lockdown | `com.apple.instruments.remoteserver` |
+| DVT Lockdown fallback | `com.apple.instruments.remoteserver.DVTSecureSocketProxy` |
+| DVT RSD | `com.apple.instruments.dtservicehub` |
+| DVT channel | `com.apple.xcode.debug-gauge-data-providers.Energy` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::dvt::{
+    RemoteServerClient,
+    energy_monitor::EnergyMonitorClient,
+};
+
+let mut remote = RemoteServerClient::connect(&provider).await?;
+let mut client = EnergyMonitorClient::new(&mut remote).await?;
+let pids = [1234];
+client.start_sampling(&pids).await?;
+let attrs = client.sample_attributes(&pids).await?;
+println!("{attrs:#?}");
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools energy_monitor 1234
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Channel creation failed | The DVT remote server did not accept the channel identifier. |
+| Protocol decode error | Check that the client and device service are using the expected DTX payload shape. |
+| Developer service unavailable | Start from the iOS 17+ tunnel path or a device state that exposes developer services. |
+
+## Source
+
+- [`idevice/src/services/dvt/energy_monitor.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/dvt/energy_monitor.rs)
+- [`tools/src/energy_monitor.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/energy_monitor.rs)

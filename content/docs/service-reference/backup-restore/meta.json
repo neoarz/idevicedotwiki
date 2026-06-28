@@ -1,4 +1,7 @@
 {
   "title": "Backup & Restore",
-  "pages": []
+  "pages": [
+    "mobilebackup2",
+    "restore-service"
+  ]
 }

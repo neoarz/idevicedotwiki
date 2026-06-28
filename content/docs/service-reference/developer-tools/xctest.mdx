@@ -1,0 +1,59 @@
+---
+title: XCTest
+description: Run XCTest and XCUITest sessions through DVT.
+---
+
+XCTest support builds on DVT, Installation Proxy, AFC, RSD, and CoreDevice Proxy. The public types include `TestConfig`, `XCUITestService`, and WDA run handles.
+
+## Use It For
+
+- Build XCTest configuration payloads.
+- Start XCUITest flows.
+- Run WDA-backed test sessions.
+- Bridge WDA ports when needed.
+
+## Feature Flag
+
+```toml title="Cargo.toml"
+[dependencies]
+idevice = { version = "0.1.64", features = ["usbmuxd", "xctest"] }
+```
+
+## Service Names
+
+| Path | Value |
+| --- | --- |
+| DVT Lockdown | `com.apple.instruments.remoteserver` |
+| DVT RSD | `com.apple.instruments.dtservicehub` |
+
+## Rust Example
+
+```rust title="src/main.rs"
+use idevice::dvt::xctest::{TestConfig, XCUITestService};
+
+let config = TestConfig::from_installation_proxy(
+    &mut installation_proxy,
+    "com.example.Runner",
+).await?;
+let service = XCUITestService::new(provider).await?;
+```
+
+## CLI Equivalent
+
+```bash title="Terminal"
+idevice-tools xctest
+```
+
+## Common Errors
+
+| Error | What to check |
+| --- | --- |
+| Channel creation failed | The DVT remote server did not accept the channel identifier. |
+| Protocol decode error | Check that the client and device service are using the expected DTX payload shape. |
+| Developer service unavailable | Start from the iOS 17+ tunnel path or a device state that exposes developer services. |
+
+## Source
+
+- [`idevice/src/services/dvt/xctest/mod.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/dvt/xctest/mod.rs)
+- [`idevice/src/services/dvt/xctest/types.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/dvt/xctest/types.rs)
+- [`tools/src/xctest.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/tools/src/xctest.rs)

@@ -1,4 +1,18 @@
 {
   "title": "Developer Tools",
-  "pages": []
+  "pages": [
+    "dvt-remote-server",
+    "process-control",
+    "sysmontap",
+    "graphics",
+    "network-monitor",
+    "energy-monitor",
+    "condition-inducer",
+    "application-listing",
+    "dvt-device-info",
+    "dvt-screenshot",
+    "dvt-location-simulation",
+    "xctest",
+    "wda"
+  ]
 }
