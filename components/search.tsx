@@ -13,13 +13,12 @@ import {
 } from 'fumadocs-ui/components/dialog/search';
 import { useDocsSearch } from 'fumadocs-core/search/client';
 import { flexsearchStaticClient } from 'fumadocs-core/search/client/flexsearch-static';
-
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+import { withBasePath } from '@/lib/site';
 
 export default function StaticSearchDialog(props: SharedProps) {
   const { search, setSearch, query } = useDocsSearch({
     client: flexsearchStaticClient({
-      from: `${basePath}/api/search`,
+      from: withBasePath('/api/search'),
     }),
   });
 

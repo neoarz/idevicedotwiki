@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from 'next/font/google';
 import type { Metadata } from 'next';
 import { Provider } from '@/components/provider';
+import { withBasePath } from '@/lib/site';
 import './global.css';
 
 const geist = Geist({
@@ -23,15 +24,15 @@ export const metadata: Metadata = {
   },
   description: 'Documentation for the pure Rust library and CLI for interacting with iOS services.',
   icons: {
-    icon: '/idevice-icon.webp',
-    apple: '/idevice-icon.webp',
+    icon: withBasePath('/idevice-icon.webp'),
+    apple: withBasePath('/idevice-icon.webp'),
   },
   openGraph: {
     title: 'idevice docs',
     description: 'Documentation for the pure Rust library and CLI for interacting with iOS services.',
     images: [
       {
-        url: '/idevice-icon.webp',
+        url: withBasePath('/idevice-icon.webp'),
         width: 80,
         height: 80,
         alt: 'idevice',
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
     card: 'summary',
     title: 'idevice docs',
     description: 'Documentation for the pure Rust library and CLI for interacting with iOS services.',
-    images: ['/idevice-icon.webp'],
+    images: [withBasePath('/idevice-icon.webp')],
   },
 };
 

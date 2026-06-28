@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import type { BaseLayoutProps, LinkItemType } from 'fumadocs-ui/layouts/shared';
+import { withBasePath } from '@/lib/site';
 
 function GitHubIcon() {
   return (
@@ -26,7 +27,7 @@ export function baseOptions(): BaseLayoutProps {
       title: (
         <>
           <Image
-            src="/idevice-icon.webp"
+            src={withBasePath('/idevice-icon.webp')}
             alt=""
             width={20}
             height={20}

@@ -40,6 +40,9 @@ jobs:
         run: pnpm run typecheck
 
       - name: Build static site
+        env:
+          NEXT_PUBLIC_BASE_PATH: /idevicedotwiki
+          NEXT_PUBLIC_SITE_URL: https://neoarz.github.io/idevicedotwiki
         run: pnpm run build
 
       - name: Disable Jekyll

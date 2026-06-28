@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { withBasePath } from '@/lib/site';
 
 const links = [
   { id: 'quick-start', title: 'Quick Start', href: '/docs' },
@@ -14,7 +15,7 @@ export default function HomePage() {
       <div className="mx-auto flex min-h-screen w-full max-w-3xl flex-col justify-center px-6 py-16">
         <div className="flex items-center gap-3">
           <Image
-            src="/idevice-icon.webp"
+            src={withBasePath('/idevice-icon.webp')}
             alt=""
             width={44}
             height={44}
