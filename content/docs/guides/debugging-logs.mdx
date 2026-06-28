@@ -18,10 +18,10 @@ These services are useful when inspecting what a device or app is doing.
 
 `syslog_relay` streams system logs. `os_trace_relay` streams OS trace logs.
 
-Related modules:
+Related service reference:
 
-- [`services/syslog_relay.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/syslog_relay.rs)
-- [`services/os_trace_relay.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/os_trace_relay.rs)
+- [Syslog Relay](/docs/service-reference/logs-capture/syslog-relay)
+- [OS Trace Relay](/docs/service-reference/logs-capture/os-trace-relay)
 
 Useful CLI commands:
 
@@ -34,9 +34,9 @@ idevice-tools os_trace_relay
 
 `debug_proxy` connects to the device debug proxy service.
 
-Related module:
+Related service reference:
 
-- [`services/debug_proxy.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/debug_proxy.rs)
+- [Debug Proxy](/docs/service-reference/logs-capture/debug-proxy)
 
 Useful CLI command:
 
@@ -49,10 +49,10 @@ idevice-tools debug_proxy
 `pcapd` captures network packets from the device. `bt_packet_logger` captures
 Bluetooth packets.
 
-Related modules:
+Related service reference:
 
-- [`services/pcapd.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/pcapd.rs)
-- [`services/bt_packet_logger.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/bt_packet_logger.rs)
+- [PCAPD](/docs/service-reference/logs-capture/pcapd)
+- [Bluetooth Packet Logger](/docs/service-reference/logs-capture/bluetooth-packet-logger)
 
 Useful CLI commands:
 
@@ -65,9 +65,9 @@ idevice-tools bt_packet_logger
 
 `crashreportcopymobile` copies crash reports from the device.
 
-Related module:
+Related service reference:
 
-- [`services/crashreportcopymobile.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/crashreportcopymobile.rs)
+- [Crash Reports](/docs/service-reference/logs-capture/crash-reports)
 
 Useful CLI command:
 

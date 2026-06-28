@@ -16,8 +16,8 @@ These are the main projects worth comparing against:
 
 | | idevice | libimobiledevice | pymobiledevice3 | go-ios |
 |---|:---:|:---:|:---:|:---:|
-| RemoteXPC / RSD | ✅ | ⚠️ | ✅ | ✅ |
-| CoreDevice tunnel | ✅ | ⚠️ | ✅ | ✅ |
+| RemoteXPC / RSD | ✅ | ❌ | ✅ | ✅ |
+| CoreDevice tunnel | ✅ | ❌ | ✅ | ✅ |
 | Userspace tunnel (no root) | ✅ | ❌ | ✅ | ✅ |
 | rppairing | ✅ | ❌ | ✅ | ✅ |
 
@@ -29,7 +29,7 @@ These are the main projects worth comparing against:
 |---|:---:|:---:|:---:|:---:|
 | Remote pairing (rppairing) | ✅ | ❌ | ✅ | ✅ |
 | Heartbeat | ✅ | ✅ | ✅ | ❌ |
-| Install coordination proxy | ✅ | ❌ | ✅ | ❌ |
+| Install coordination proxy | ✅ | ❌ | ❌ | ❌ |
 | Preboard service | ✅ | ✅ | ✅ | ❌ |
 
 ### Developer tools (DVT / Instruments)
@@ -43,19 +43,19 @@ These are the main projects worth comparing against:
 | Network monitor | ✅ | ❌ | ✅ | ✅ |
 | Condition inducer | ✅ | ❌ | ✅ | ✅ |
 | Energy monitor | ✅ | ❌ | ✅ | ❌ |
-| Screenshot | ✅ | ✅ (screenshotr) | ✅ | ✅ |
+| Screenshot | ✅ | ✅ | ✅ | ✅ |
 
 ### CoreDevice services (iOS 17+)
 
 | Service | idevice | libimobiledevice | pymobiledevice3 | go-ios |
 |---|:---:|:---:|:---:|:---:|
-| CoreDevice proxy | ✅ | ⚠️ | ✅ | ✅ |
+| CoreDevice proxy | ✅ | ❌ | ✅ | ✅ |
 | App service | ✅ | ❌ | ✅ | ✅ |
 | HID (input injection) | ✅ | ❌ | ✅ | ❌ |
-| Screen capture / display stream | ✅ | ❌ | ✅ | ✅ |
+| Screen capture / display stream | ✅ | ❌ | ✅ | ❌ |
 | Pasteboard (clipboard) | ✅ | ❌ | ✅ | ❌ |
-| Orientation | ✅ | ❌ | ✅ | ✅ |
-| Location service | ✅ | ❌ | ✅ | ✅ |
+| Orientation | ✅ | ❌ | ✅ | ❌ |
+| Location service | ✅ | ❌ | ✅ | ❌ |
 
 ### Debugging and capture
 
@@ -74,7 +74,7 @@ These are the main projects worth comparing against:
 |---|:---:|:---:|:---:|:---:|
 | MobileBackup2 | ✅ | ✅ | ✅ | ❌ |
 | Restore service | ✅ | ✅ | ✅ | ❌ |
-| TSS (Apple signing) | ⚠️ | ✅ (libtatsu) | ✅ | ❌ |
+| TSS (Apple signing) | ⚠️ | ✅ | ✅ | ✅ |
 
 ### Automation
 

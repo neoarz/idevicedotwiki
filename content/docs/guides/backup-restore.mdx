@@ -16,9 +16,9 @@ and TSS signing helpers.
 
 `mobilebackup2` is the service used for backup workflows.
 
-Related module:
+Related service reference:
 
-- [`services/mobilebackup2.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/mobilebackup2.rs)
+- [MobileBackup2](/docs/service-reference/backup-restore/mobilebackup2)
 
 Useful CLI command:
 
@@ -31,9 +31,9 @@ idevice-tools mobilebackup2
 `restore_service` covers restore-mode operations such as entering recovery,
 rebooting, and reading restore-related information.
 
-Related module:
+Related service reference:
 
-- [`services/restore_service.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/services/restore_service.rs)
+- [Restore Service](/docs/service-reference/backup-restore/restore-service)
 
 Useful CLI command:
 
@@ -46,6 +46,5 @@ idevice-tools restore_service
 `tss` makes requests to Apple's TSS signing servers. In `idevice`, this is
 currently documented as partial support.
 
-Related module:
-
-- [`tss.rs`](https://github.com/jkcoxson/idevice/blob/e3a6066/idevice/src/tss.rs)
+TSS is a helper area used by restore-related flows, not a standalone service
+reference page.
