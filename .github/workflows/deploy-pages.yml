@@ -41,8 +41,7 @@ jobs:
 
       - name: Build static site
         env:
-          NEXT_PUBLIC_BASE_PATH: /idevicedotwiki
-          NEXT_PUBLIC_SITE_URL: https://neoarz.github.io/idevicedotwiki
+          NEXT_PUBLIC_SITE_URL: https://idevice.wiki
         run: pnpm run build
 
       - name: Disable Jekyll
